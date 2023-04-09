@@ -1,33 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class GameController : MonoBehaviour
 {
+  public int[] limitDistance = { 150, 0 };
   void Start()
   {
+    drowInitialEdges();
+  }
+  void drowInitialEdges()
+  {
     GameObject Edge = Resources.Load("Edge") as GameObject;
-
-    // get the list of NodeNorm objects using the tag "NodeNorm"
-    List<GameObject> NodeNorms = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
-    List<Vector3> NodeNormsPos = new List<Vector3>();
-    for (int i = 0; i < NodeNorms.Count; i++)
+    List<GameObject> nodeNorms = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
+    for (int i = 0; i < nodeNorms.Count - 1; i++)
     {
-      NodeNormsPos.Add(NodeNorms[i].transform.position);
-    }
-    for (int i = 0; i < NodeNorms.Count; i++)
-    {
-      for (int j = 0; j < NodeNorms.Count; j++)
+      for (int j = i + 1; j < nodeNorms.Count; j++)
       {
-        if (i != j)
+        if (Vector3.Distance(nodeNorms[i].transform.position, nodeNorms[j].transform.position) < limitDistance[0])
         {
-          // I want to draw lines using line renderer.
-          GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity);
-          // Change the Sorting Layer of the line renderer
+          GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
           line.GetComponent<Renderer>().sortingLayerName = "Edge";
           LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-          lineRenderer.SetPosition(0, NodeNormsPos[i]);
-          lineRenderer.SetPosition(1, NodeNormsPos[j]);
+          lineRenderer.SetPosition(0, nodeNorms[i].transform.position);
+          lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
+        }
+      }
+    }
+    List<GameObject> nodeGames = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeGame"));
+    for (int i = 0; i < nodeGames.Count; i++)
+    {
+      for (int j = 0; j < nodeNorms.Count; j++)
+      {
+        if (Vector3.Distance(nodeGames[i].transform.position, nodeNorms[j].transform.position) < limitDistance[1])
+        {
+          //make Edge object below "Edges" object
+          //Solve the error UnityException: Transform child out of bounds
+          //Node.Start()(at Assets / Scripts / Node.cs:43)
+          GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
+
+          line.GetComponent<Renderer>().sortingLayerName = "Edge";
+          LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
+          lineRenderer.SetPosition(0, nodeGames[i].transform.position);
+          lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
         }
       }
     }
