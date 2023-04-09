@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
           LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
           lineRenderer.SetPosition(0, nodeNorms[i].transform.position);
           lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
+          line.name = "Edge (" + nodeNorms[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
         }
       }
     }
@@ -43,6 +44,7 @@ public class GameController : MonoBehaviour
           LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
           lineRenderer.SetPosition(0, nodeGames[i].transform.position);
           lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
+          line.name = "Edge (" + nodeGames[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
         }
       }
     }
