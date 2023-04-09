@@ -14,10 +14,11 @@ public class Node : MonoBehaviour, IPointerClickHandler
    * 1 = active but not clear
    * 2 = clear
    */
-  public GameObject Balloon;// = Resources.Load("Fukidashi") as GameObject;
-  //make a list of nodes that are near less than 300px
+  public string answer = "";
+  GameObject QuestionBalloon;
   public List<GameObject> nearNodes = new List<GameObject>();
-  GameObject Edge;
+  GameObject EdgeActive;
+  GameObject GameController;
   void Awake()
   {
     id = ExtractNumberFromObjectName(gameObject);
@@ -25,10 +26,8 @@ public class Node : MonoBehaviour, IPointerClickHandler
     {
       isGameNode = 1;
     }
-    else if (gameObject.name.Contains("Norm") && id <= 3)
-    {
-      state = 1;
-    }
+    QuestionBalloon = GameObject.Find("Question");
+    GameController = GameObject.Find("GameController");
   }
 
   void Start()
@@ -36,8 +35,13 @@ public class Node : MonoBehaviour, IPointerClickHandler
     int[] limitDistance = GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
     // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
-    Edge = Resources.Load("Edge") as GameObject;
-    List<GameObject> nearNodes = makeNearNodes(limitDistance);
+    EdgeActive = Resources.Load("EdgeActive") as GameObject;
+    nearNodes = makeNearNodes(limitDistance);
+
+    if (id == 0)
+    {
+      ChangeState(2);
+    }
 
     //print my uid to the child text in the hierarchy
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = id.ToString();
@@ -51,7 +55,14 @@ public class Node : MonoBehaviour, IPointerClickHandler
     Debug.Log("Clicked on node");
     if (state >= 1)
     {
-      GenerateBaloon(state, id);
+      if (isGameNode == 1)
+      {
+        ActivateMiniGameBalloon(state, id, answer);
+      }
+      else
+      {
+        ActivateQuestionBalloon(state, id, answer);
+      }
     }
   }
 
@@ -68,11 +79,27 @@ public class Node : MonoBehaviour, IPointerClickHandler
     {
       //change the color to FFFF00
       GetComponent<SpriteRenderer>().color = new Color(0.721f, 0.984f, 0.235f);
+      foreach (GameObject node in nearNodes)
+      {
+        if (node.GetComponent<Node>().state == 1)
+        {
+          DrowEdgeActive(gameObject, node);
+        }
+      }
     }
     else if (state == 2)
     {
       //change the color to 00FF00
       GetComponent<SpriteRenderer>().color = new Color(1f, 0.011f, 0.901f);
+      //change the near nodes to active except already active nodes
+      foreach (GameObject node in nearNodes)
+      {
+        if (node.GetComponent<Node>().state == 0)
+        {
+          node.GetComponent<Node>().ChangeState(1);
+        }
+        DrowEdgeActive(gameObject, node);
+      }
     }
   }
   void LoadImageByName(string name, GameObject obj)
@@ -81,17 +108,80 @@ public class Node : MonoBehaviour, IPointerClickHandler
     // obj.GetComponent<SpriteRenderer>().sprite = sprite;
   }
 
-  void GenerateBaloon(int state, int id)
+  void DrowEdgeActive(GameObject node1, GameObject node2)
   {
-    GameObject balloon = Instantiate(Balloon, transform.position, Quaternion.identity);
-    // Change the image depending on the id.
-    // LoadImageByName("QImage" + id, balloon);
+    //Delete the edge if already exists
+    string edgeName = "EdgeActive" + node1.GetComponent<Node>().id.ToString() + "-" + node2.GetComponent<Node>().id.ToString();
+    if (GameObject.Find(edgeName))
+    {
+      Destroy(GameObject.Find(edgeName));
+    }
+    GameObject edge = Instantiate(EdgeActive);
+    edge.transform.SetParent(GameObject.Find("Edges").transform);
+    //drow line from node1.transform.position to node2.transform.position
+    edge.GetComponent<LineRenderer>().SetPosition(0, node1.transform.position);
+    edge.GetComponent<LineRenderer>().SetPosition(1, node2.transform.position);
+    //change name using node1 and node2
+    edge.name = edgeName;
+    //change color based on the state of the nodes
+    edge.GetComponent<LineRenderer>().startColor = node2.GetComponent<SpriteRenderer>().color;
+    edge.GetComponent<LineRenderer>().endColor = node2.GetComponent<SpriteRenderer>().color;
+  }
+
+  public void ActivateQuestionBalloon(int state, int id, string answer)
+  {
+    // Activate the balloon
+    QuestionBalloon.SetActive(true);
+
+    // Change the image of the balloon child "QuestionImage" to /Assets/Resources/Questions/Qxx.png
     if (state == 2)
     {
       // Add the clear text below the image.
-      Debug.Log("Add the clear text below the image.");
+      Debug.Log("Already clear");
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "もうすでに解決している。";
     }
+    else
+    {
+      // Add the question text below the image.
+      Debug.Log("Not clear");
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "この答えなんだっけ...?";
+    }
+    // Get the "QuestionImage" child object of the balloon
+    GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
+    // Load the image from the Resources/Questions folder based on the id
+    Sprite questionSprite = Resources.Load<Sprite>("Questions/Q" + id.ToString("D2"));
+    // Set the loaded image to the "QuestionImage" object using SpriteRenderer
+    questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, answer);
+  }
+  public void ActivateMiniGameBalloon(int state, int id, string answer)
+  {
+    // Activate the balloon
+    QuestionBalloon.SetActive(true);
 
+    // Change the image of the balloon child "QuestionImage" to /Assets/Resources/Questions/Qxx.png
+    GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
+    if (state == 2)
+    {
+      // Add the clear text below the image.
+      Debug.Log("Already clear");
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "もうすでに解決している。";
+      Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGameCleared");
+      questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+    }
+    else
+    {
+      // Add the question text below the image.
+      Debug.Log("Not clear");
+      List<int> boothIds = GameController.GetComponent<GameController>().GetBoothIds();
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "ブース" + boothIds[id % 4] + "へ向かおう!";
+      Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGame" + boothIds[id % 4].ToString("D2"));
+      questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+    }
+    // Get the "QuestionImage" child object of the balloon
+    // Load the image from the Resources/Questions folder based on the id
+    // Set the loaded image to the "QuestionImage" object using SpriteRenderer
+    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, answer);
   }
   List<GameObject> makeNearNodes(int[] limitDistance)
   {

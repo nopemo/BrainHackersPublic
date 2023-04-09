@@ -1,15 +1,48 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using TMPro;
 
 public class GameController : MonoBehaviour
 {
   public int[] limitDistance = { 150, 0 };
+  int currentId = -1;
+  int currentState = 0;
+  string currentAnswer = "It has not been set yet.";
+  GameObject QuestionBalloon;
+  List<int> boothIds = new List<int>();
+  void Awake()
+  {
+    QuestionBalloon = GameObject.Find("Question");
+    //shoufle the boothIds from 1 to 4 randomly
+    for (int i = 1; i <= 4; i++)
+    {
+      boothIds.Add(i);
+    }
+
+    // Shuffle the boothIds list
+    for (int i = 0; i < boothIds.Count; i++)
+    {
+      int temp = boothIds[i];
+      int randomIndex = UnityEngine.Random.Range(i, boothIds.Count);
+      boothIds[i] = boothIds[randomIndex];
+      boothIds[randomIndex] = temp;
+    }
+  }
   void Start()
   {
-    drowInitialEdges();
+    DrowInitialEdges();
+    currentId = -1;
+    currentState = 0;
+    currentAnswer = "";
   }
-  void drowInitialEdges()
+  public void SetCurrentProperties(int id, int state, string answer)
+  {
+    currentId = id;
+    currentState = state;
+    currentAnswer = answer;
+  }
+  void DrowInitialEdges()
   {
     GameObject Edge = Resources.Load("Edge") as GameObject;
     List<GameObject> nodeNorms = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
@@ -48,5 +81,31 @@ public class GameController : MonoBehaviour
         }
       }
     }
+  }
+  public void CheckAnswer(string inputtext)
+  {
+    if (currentId != -1 && inputtext == currentAnswer)
+    {
+      Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
+      if (currentId > 90)
+      {
+        GameObject.Find("NodeGame (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+      }
+      else
+      {
+        GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+      }
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
+      SetCurrentProperties(-1, 0, "It has not been set yet.");
+    }
+    else
+    {
+      Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "違う気がする...";
+    }
+  }
+  public List<int> GetBoothIds()
+  {
+    return boothIds;
   }
 }

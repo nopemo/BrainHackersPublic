@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-public class SendWords : MonoBehaviour, IPointerClickHandler
+public class ResetWords : MonoBehaviour, IPointerClickHandler
 {
   GameObject InputWordsField;
   void Awake()
@@ -13,7 +13,7 @@ public class SendWords : MonoBehaviour, IPointerClickHandler
 
   public void OnPointerClick(PointerEventData eventData)
   {
-    Debug.Log("Clicked on SendWords");
-    InputWordsField.GetComponent<InputWordsField>().SendWords();
+    Debug.Log("Clicked on ResetWords");
+    InputWordsField.GetComponent<InputWordsField>().ResetWords();
   }
 }
