@@ -40,11 +40,6 @@ public class Node : MonoBehaviour, IPointerClickHandler
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
   }
 
-  void Start()
-  {
-
-  }
-
   public void OnPointerClick(PointerEventData eventData)
   {
     Debug.Log("Clicked on node");
