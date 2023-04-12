@@ -7,9 +7,11 @@ public class GameController : MonoBehaviour
 {
   public int[] limitDistance = { 150, 0 };
   int currentId = -1;
-  int currentState = 0;
+  int currentState = -1;
+  int currentIsGameNode = -1;
   string currentAnswer = "It has not been set yet.";
   GameObject QuestionBalloon;
+  [SerializeField] GameObject StartNode;
   List<int> boothIds = new List<int>();
   void Awake()
   {
@@ -32,14 +34,17 @@ public class GameController : MonoBehaviour
   void Start()
   {
     DrowInitialEdges();
+    InitGame();
     currentId = -1;
-    currentState = 0;
+    currentState = -1;
+    currentIsGameNode = -1;
     currentAnswer = "";
   }
-  public void SetCurrentProperties(int id, int state, string answer)
+  public void SetCurrentProperties(int id, int state, int isGameNode, string answer)
   {
     currentId = id;
     currentState = state;
+    currentIsGameNode = isGameNode;
     currentAnswer = answer;
   }
   void DrowInitialEdges()
@@ -84,28 +89,47 @@ public class GameController : MonoBehaviour
   }
   public void CheckAnswer(string inputtext)
   {
-    if (currentId != -1 && inputtext == currentAnswer)
+    if (currentId != -1 && currentIsGameNode == 1)
     {
-      Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-      if (currentId > 90)
+      if (inputtext == currentAnswer)
       {
+        Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
         GameObject.Find("NodeGame (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+        ClearMiniGame(currentId);
+        SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
       }
       else
       {
-        GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+        Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
       }
-      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
-      SetCurrentProperties(-1, 0, "It has not been set yet.");
     }
-    else
+    else if (currentId != -1 && currentIsGameNode == 0)
     {
-      Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
-      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "違う気がする...";
+      if (inputtext == currentAnswer)
+      {
+        Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
+        GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+        QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
+        SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
+      }
+      else
+      {
+        Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
+        QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "違う気がする...";
+      }
     }
   }
   public List<int> GetBoothIds()
   {
     return boothIds;
+  }
+
+  void ClearMiniGame(int id)
+  {
+    GameObject.Find("BalloonsGame (" + id.ToString() + ")").SetActive(false);
+  }
+  void InitGame()
+  {
+    StartNode.GetComponent<Node>().ChangeState(2);
   }
 }

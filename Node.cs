@@ -28,26 +28,21 @@ public class Node : MonoBehaviour, IPointerClickHandler
     }
     QuestionBalloon = GameObject.Find("Question");
     GameController = GameObject.Find("GameController");
-  }
-
-  void Start()
-  {
     int[] limitDistance = GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
     // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
     EdgeActive = Resources.Load("EdgeActive") as GameObject;
     nearNodes = makeNearNodes(limitDistance);
-
-    if (id == 0)
-    {
-      ChangeState(2);
-    }
-
     //print my uid to the child text in the hierarchy
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = id.ToString();
     //change the sorting layer and order in layer of the text
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "Node";
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
+  }
+
+  void Start()
+  {
+
   }
 
   public void OnPointerClick(PointerEventData eventData)
@@ -72,13 +67,13 @@ public class Node : MonoBehaviour, IPointerClickHandler
     // GetComponent<SpriteRenderer>().sprite = nodeSprites[state];
     if (state == 0)
     {
-      //change the color to FF0000
-      GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 0.6f);
+      //change the color to [UIColor colorWithRed:0.286f green:0.364f blue:0.396f alpha:1.000f];
+      GetComponent<SpriteRenderer>().color = new Color(0.286f, 0.364f, 0.396f);
     }
     else if (state == 1)
     {
-      //change the color to FFFF00
-      GetComponent<SpriteRenderer>().color = new Color(0.721f, 0.984f, 0.235f);
+      //change the color to [UIColor colorWithRed:0.043f green:0.843f blue:0.843f alpha:1.000f]
+      GetComponent<SpriteRenderer>().color = new Color(0.043f, 0.843f, 0.843f);
       foreach (GameObject node in nearNodes)
       {
         if (node.GetComponent<Node>().state == 1)
@@ -89,15 +84,18 @@ public class Node : MonoBehaviour, IPointerClickHandler
     }
     else if (state == 2)
     {
-      //change the color to 00FF00
-      GetComponent<SpriteRenderer>().color = new Color(1f, 0.011f, 0.901f);
+      //change the color to [UIColor colorWithRed:1.000f green:0.388f blue:0.050f alpha:1.000f]
+      GetComponent<SpriteRenderer>().color = new Color(1.000f, 0.388f, 0.050f);
       //change the near nodes to active except already active nodes
       foreach (GameObject node in nearNodes)
       {
+        Debug.Log("Here is " + node.name + "");
         if (node.GetComponent<Node>().state == 0)
         {
+          Debug.Log("From " + gameObject.name + " to " + node.name + "state changed to 1");
           node.GetComponent<Node>().ChangeState(1);
         }
+        Debug.Log("Drow Edge from " + gameObject.name + " to " + node.name);
         DrowEdgeActive(gameObject, node);
       }
     }
@@ -112,9 +110,14 @@ public class Node : MonoBehaviour, IPointerClickHandler
   {
     //Delete the edge if already exists
     string edgeName = "EdgeActive" + node1.GetComponent<Node>().id.ToString() + "-" + node2.GetComponent<Node>().id.ToString();
+    string anotherEdgeName = "EdgeActive" + node2.GetComponent<Node>().id.ToString() + "-" + node1.GetComponent<Node>().id.ToString();
     if (GameObject.Find(edgeName))
     {
       Destroy(GameObject.Find(edgeName));
+    }
+    if (GameObject.Find(anotherEdgeName))
+    {
+      Destroy(GameObject.Find(anotherEdgeName));
     }
     GameObject edge = Instantiate(EdgeActive);
     edge.transform.SetParent(GameObject.Find("Edges").transform);
@@ -125,6 +128,11 @@ public class Node : MonoBehaviour, IPointerClickHandler
     edge.name = edgeName;
     //change color based on the state of the nodes
     edge.GetComponent<LineRenderer>().startColor = node2.GetComponent<SpriteRenderer>().color;
+    Debug.Log("Start Color: " + node1.GetComponent<SpriteRenderer>().color
+    + "End Color: " + node2.GetComponent<SpriteRenderer>().color
+    + "Node1: " + node1.name
+    + "Node2: " + node2.name);
+
     edge.GetComponent<LineRenderer>().endColor = node2.GetComponent<SpriteRenderer>().color;
   }
 
@@ -152,7 +160,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     Sprite questionSprite = Resources.Load<Sprite>("Questions/Q" + id.ToString("D2"));
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
-    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, answer);
+    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, answer);
   }
   public void ActivateMiniGameBalloon(int state, int id, string answer)
   {
@@ -181,7 +189,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     // Get the "QuestionImage" child object of the balloon
     // Load the image from the Resources/Questions folder based on the id
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
-    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, answer);
+    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, answer);
   }
   List<GameObject> makeNearNodes(int[] limitDistance)
   {
@@ -200,6 +208,14 @@ public class Node : MonoBehaviour, IPointerClickHandler
       if (Vector3.Distance(transform.position, nodeGames[i].transform.position) < limitDistance[1])
       {
         nearNodes.Add(nodeGames[i]);
+      }
+    }
+    if (isGameNode == 1)
+    {
+      Debug.Log("This is game node of id: " + id);
+      for (int i = 0; i < nearNodes.Count; i++)
+      {
+        Debug.Log("nearNodes[" + i + "] name: " + nearNodes[i].name);
       }
     }
     return nearNodes;
