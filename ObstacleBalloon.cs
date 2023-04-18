@@ -11,8 +11,8 @@ public class ObstacleBalloon : MonoBehaviour
   [SerializeField] string subText;
   void Awake()
   {
-    gameObject.transform.Find("ObstacleText").GetComponent<TextMeshProUGUI>().text =  mainText;
-    gameObject.transform.Find("ObstacleDeleteText").GetComponent<TextMeshProUGUI>().text =  subText;
+    gameObject.transform.Find("ObstacleText").GetComponent<TextMeshProUGUI>().text = mainText;
+    gameObject.transform.Find("ObstacleDeleteText").GetComponent<TextMeshProUGUI>().text = subText;
   }
 
   DisactivateAnimation()
