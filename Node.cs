@@ -16,7 +16,9 @@ public class Node : MonoBehaviour, IPointerClickHandler
    */
   public string answer = "";
   GameObject QuestionBalloon;
-  public List<GameObject> nearNodes = new List<GameObject>();
+  List<GameObject> nearNodes = new List<GameObject>();
+  [SerializeField] List<GameObject> deleteObstacleBalloons;
+
   GameObject EdgeActive;
   GameObject GameController;
   void Awake()
@@ -215,6 +217,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     }
     return nearNodes;
   }
+
   int ExtractNumberFromObjectName(GameObject obj)
   {
     string objectName = obj.name;
