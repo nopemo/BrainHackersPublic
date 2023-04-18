@@ -15,5 +15,9 @@ public class ObstacleBalloon : MonoBehaviour
     gameObject.transform.Find("ObstacleDeleteText").GetComponent<TextMeshProUGUI>().text = subText;
   }
 
-  DisactivateAnimation()
+  void DisactivateAnimation()
+  {
+    //disactivate the balloon
+    Debug.Log("Disactivate Obstacle Balloon");
+  }
 }

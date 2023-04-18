@@ -17,7 +17,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
   public string answer = "";
   GameObject QuestionBalloon;
   List<GameObject> nearNodes = new List<GameObject>();
-  [SerializeField] List<GameObject> deleteObstacleBalloons;
+  public List<GameObject> deleteObstacleBalloons;
 
   GameObject EdgeActive;
   GameObject GameController;
@@ -30,11 +30,12 @@ public class Node : MonoBehaviour, IPointerClickHandler
     }
     QuestionBalloon = GameObject.Find("Question");
     GameController = GameObject.Find("GameController");
-    int[] limitDistance = GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
+    int[] limitDistance = { 150, 200 }; // GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
     // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
     EdgeActive = Resources.Load("EdgeActive") as GameObject;
     nearNodes = makeNearNodes(limitDistance);
+    Debug.Log("nearNodes.Count:" + nearNodes.Count.ToString());
     //print my uid to the child text in the hierarchy
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = id.ToString();
     //change the sorting layer and order in layer of the text

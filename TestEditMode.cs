@@ -7,7 +7,7 @@ using TMPro;
 public class TestEditMode : MonoBehaviour
 
 {
-[SerializeField] int[] limitDistance;
+  [SerializeField] int[] limitDistance;
   void Start()
   {
     Debug.Log("StartTestEditMode");
@@ -41,7 +41,7 @@ public class TestEditMode : MonoBehaviour
   {
     Debug.Log("OnRenderObject");
   }
-  void DrowInitialEdges()
+  public void DrowInitialEdges()
   {
     string _tmpName;
     GameObject Edge = Resources.Load("Edge") as GameObject;
@@ -57,12 +57,13 @@ public class TestEditMode : MonoBehaviour
           LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
           lineRenderer.SetPosition(0, nodeNorms[i].transform.position);
           lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
-          _tmpName="Edge (" + nodeNorms[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
+          _tmpName = "Edge (" + nodeNorms[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
           if (GameObject.Find(_tmpName))
           {
             Destroy(GameObject.Find(_tmpName));
           }
           line.name = _tmpName;
+          line.tag = "Edge";
         }
       }
     }
@@ -79,14 +80,23 @@ public class TestEditMode : MonoBehaviour
           lineRenderer.SetPosition(0, nodeGames[i].transform.position);
           lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
 
-          _tmpName="Edge (" + nodeGames[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
+          _tmpName = "Edge (" + nodeGames[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
           if (GameObject.Find(_tmpName))
           {
             Destroy(GameObject.Find(_tmpName));
           }
           line.name = _tmpName;
+          line.tag = "Edge";
         }
       }
+    }
+  }
+  public void DeleteCurrentEdges()
+  {
+    GameObject[] edges = GameObject.FindGameObjectsWithTag("Edge");
+    for (int i = 0; i < edges.Length; i++)
+    {
+      DestroyImmediate(edges[i]);
     }
   }
 }

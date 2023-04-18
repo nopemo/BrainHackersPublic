@@ -7,7 +7,7 @@ using TMPro;
 
 public class CircleTimer : MonoBehaviour
 {
-  void UpdateTime(string _currentDuration)
+  public void UpdateTime(double _currentDuration)
   {
     Debug.Log("WRITE ME CircleTimer/UpdateTime");
   }
