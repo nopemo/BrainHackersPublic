@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
     startTime = DateTime.Now;
     startNode.GetComponent<Node>().ChangeState(2);
+    ActivateInputWordsSpaces();
   }
   void Update()
   {
@@ -121,9 +122,16 @@ public class GameController : MonoBehaviour
   }
   void ActivateInputWordsSpaces()
   {
-    for (int _i = 0; (_i < listOfClearedGameNodeIds.Count) && (_i < inputWordsSpaces.Count); _i++)
+    for (int _i = 0; _i < inputWordsSpaces.Count; _i++)
     {
-      inputWordsSpaces[_i].SetActive(true);
+      if (_i < listOfClearedGameNodeIds.Count + 1)
+      {
+        inputWordsSpaces[_i].SetActive(true);
+      }
+      else
+      {
+        inputWordsSpaces[_i].SetActive(false);
+      }
     }
   }
 

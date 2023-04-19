@@ -14,6 +14,8 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
   }
   void Start()
   {
+    //move the balloon to (-360,-100,0)
+    balloon.transform.position = new Vector3(-360, -100, 0);
     //disactivate the balloon
     DisactivateBalloon();
   }
