@@ -33,11 +33,14 @@ public class GameController : MonoBehaviour
   }
   void Update()
   {
-    if ((DateTime.Now - startTime).TotalSeconds >= 40)
+    double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
+
+    if (elapsedSeconds >= 40)
     {
       CloseMainGame();
     }
-    CircleTimer.GetComponent<CircleTimer>().UpdateTime((DateTime.Now - startTime).TotalSeconds);
+
+    CircleTimer.GetComponent<CircleTimer>().UpdateTime(elapsedSeconds);
   }
   public void SetCurrentProperties(int id, int state, int isGameNode, string answer)
   {
