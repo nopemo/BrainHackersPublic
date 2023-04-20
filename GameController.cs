@@ -54,16 +54,14 @@ public class GameController : MonoBehaviour
   }
   public void CheckAnswer(string inputtext)
   {
-    if (currentState == 1)
+    if (currentState == 1 && !currentIsSentCorrectAnswer)
     {
       if (currentIsGameNode == 1)
       {
         if (inputtext == currentAnswer)
         {
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          GameObject.Find("NodeGame (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           ClearMiniGame(currentId);
-          SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
           currentIsSentCorrectAnswer = true;
         }
         else
@@ -76,9 +74,7 @@ public class GameController : MonoBehaviour
         if (inputtext == currentAnswer && currentState == 1)
         {
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
-          SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
           currentIsSentCorrectAnswer = true;
         }
         else if (inputtext != currentAnswer && currentState == 1)
@@ -161,5 +157,9 @@ public class GameController : MonoBehaviour
     //Change Scene
     //Save the current properties
     //Prepare for the result scene
+  }
+  void PlayAnimations()
+  {
+    GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
   }
 }
