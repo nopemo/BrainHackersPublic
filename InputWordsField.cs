@@ -10,13 +10,12 @@ public class InputWordsField : MonoBehaviour
   string InputWordsFieldText = "";
   private int limitLength = 9;
 
-  GameObject GameController;
+  [SerializeField] GameObject GameController;
 
   void Awake()
   {
     //change the chlid TMPro text
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = InputWordsFieldText;
-    GameController = GameObject.Find("GameController");
   }
 
   public void SetFromWordButton(string word)
