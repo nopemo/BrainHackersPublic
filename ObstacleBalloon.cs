@@ -1,23 +1,38 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.Collections;
 using TMPro;
 
 public class ObstacleBalloon : MonoBehaviour
 {
-  [SerializeField] string mainText;
-  [SerializeField] string subText;
-  void Awake()
+  [SerializeField] private string mainText;
+  [SerializeField] private string subText;
+  private GameObject balloon;
+  private Animator animator;
+
+  private void Awake()
   {
+    animator = GetComponent<Animator>();
     gameObject.transform.Find("ObstacleText").GetComponent<TextMeshProUGUI>().text = mainText;
-    gameObject.transform.Find("ObstacleDeleteText").GetComponent<TextMeshProUGUI>().text = subText;
+    balloon = gameObject.transform.Find("Balloon").gameObject;
+    balloon.transform.Find("deleteObstacleText").GetComponent<TextMeshProUGUI>().text = subText;
   }
 
-  void DisactivateAnimation()
+  private void Start()
   {
-    //disactivate the balloon
-    Debug.Log("Disactivate Obstacle Balloon");
+    Debug.Log("Start called");
+    balloon.SetActive(false);
+  }
+
+  public void DisactivateAnimation()
+  {
+    // Set the "Balloon" game object active to show the animation
+    balloon.SetActive(true);
+
+    // Run "DeleteObstacleBalloons" in Animator
+    animator.SetTrigger("DeleteObstacleBalloons");
+  }
+  public void Deactivate()
+  {
+    gameObject.SetActive(false);
   }
 }

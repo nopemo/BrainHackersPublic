@@ -23,6 +23,7 @@ public class TestEditMode : MonoBehaviour
     GameObject[] fukidashi = GameObject.FindGameObjectsWithTag("Fukidashi");
     // GameObject.Find("Clock").transform.position = new Vector3(0, 0, 0);
     Debug.Log("fukidashi.Length: " + fukidashi.Length);
+
     for (int i = 0; i < fukidashi.Length; i++)
     {
       //change the order in layer of the fukidashi
@@ -30,8 +31,12 @@ public class TestEditMode : MonoBehaviour
       //change the sorting layer and order in layer of the text and the fukidashi
 
       //find the child text in the hierarchy
-      fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
       fukidashi[i].GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+      fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+      // fukidashi[i].transform.Find("Balloon").GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+      // GameObject _tmp = fukidashi[i].transform.Find("Balloon").gameObject;
+      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
     }
   }
 
@@ -312,6 +317,23 @@ public class TestEditMode : MonoBehaviour
         // 未接続なら接続
         nodeAComponent.nearNodes.Add(nodeB);
         nodeBComponent.nearNodes.Add(nodeA);
+      }
+    }
+  }
+  public void ConfirmBidirection()
+  {
+    List<GameObject> allNodes = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
+    allNodes.AddRange(GameObject.FindGameObjectsWithTag("NodeGame"));
+    foreach (GameObject node in allNodes)
+    {
+      Node nodeComponent = node.GetComponent<Node>();
+      foreach (GameObject nearNode in nodeComponent.nearNodes)
+      {
+        Node nearNodeComponent = nearNode.GetComponent<Node>();
+        if (!nearNodeComponent.nearNodes.Contains(node))
+        {
+          nearNodeComponent.nearNodes.Add(node);
+        }
       }
     }
   }

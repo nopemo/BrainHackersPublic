@@ -3,13 +3,14 @@ using UnityEngine.EventSystems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Collections;
 using TMPro;
 public class GameController : MonoBehaviour
 {
   int currentId = -1;
   int currentState = -1;
   int currentIsGameNode = -1;
-  bool currentIsSentCorrectAnswer = false;
+  public bool currentIsSentCorrectAnswer = false;
 
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -18,6 +19,7 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject startNode;
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
+  [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
@@ -97,7 +99,7 @@ public class GameController : MonoBehaviour
       listOfClearedGameNodeIds.Add(id);
     }
     ActivateInputWordsSpaces();
-    DeleteObstacleBalloons(id);
+    // DeleteObstacleBalloons(id);
   }
   List<int> ShuffleBoothIds(int numOfBooths)
   {
@@ -158,8 +160,33 @@ public class GameController : MonoBehaviour
     //Save the current properties
     //Prepare for the result scene
   }
-  void PlayAnimations()
+  public void PlayAnimations()
   {
-    GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
+    GameObject _targetNode = GameObject.Find($"Node{(currentId > 90 ? "Game" : "Norm")} ({currentId})");
+    _targetNode.GetComponent<Node>().ChangeState(2);
+
+    float delay = delayOfObstacleBalloonDelete;
+    bool _isFirst = true;
+    foreach (GameObject _targetObstacleBalloon in _targetNode.GetComponent<Node>().deleteObstacleBalloons)
+    {
+      Debug.Log(_targetObstacleBalloon.name + " is playing animation");
+      if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf)
+        continue;
+      if (_isFirst)
+      {
+        _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+        _isFirst = false;
+      }
+      else
+      {
+        StartCoroutine(PlayAnimationWithDelay(_targetObstacleBalloon, delay));
+        delay += delayOfObstacleBalloonDelete;
+      }
+    }
+  }
+  IEnumerator PlayAnimationWithDelay(GameObject _targetObstacleBalloon, float delay)
+  {
+    yield return new WaitForSeconds(delay);
+    _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
   }
 }
