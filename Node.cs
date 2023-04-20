@@ -167,7 +167,8 @@ public class Node : MonoBehaviour, IPointerClickHandler
     Debug.Log("Load image from " + "Questions/" + questionImageName);
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
-    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, false, questionAnswer);
+    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, questionAnswer);
+    GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
   }
   public void ActivateMiniGameBalloon(int state, int id, string questionAnswer)
   {
@@ -197,6 +198,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     // Load the image from the Resources/Questions folder based on the id
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, false, questionAnswer);
+    GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
   }
   List<GameObject> makeNearNodes(int[] limitDistance)
   {

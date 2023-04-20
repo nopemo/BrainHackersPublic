@@ -28,7 +28,8 @@ public class GameController : MonoBehaviour
   }
   void Start()
   {
-    SetCurrentProperties(-1, -1, -1, false, "it has not been set.");
+    SetCurrentProperties(-1, -1, -1, "it has not been set.");
+    currentIsSentCorrectAnswer = false;
     startTime = DateTime.Now;
     startNode.GetComponent<Node>().ChangeState(2);
     ActivateInputWordsSpaces();
@@ -44,12 +45,11 @@ public class GameController : MonoBehaviour
 
     CircleTimer.GetComponent<CircleTimer>().UpdateTime(elapsedSeconds);
   }
-  public void SetCurrentProperties(int id, int state, int isGameNode, bool isSentCorrectAnswer, string answer)
+  public void SetCurrentProperties(int id, int state, int isGameNode, string answer)
   {
     currentId = id;
     currentState = state;
     currentIsGameNode = isGameNode;
-    currentIsSentCorrectAnswer = isSentCorrectAnswer;
     currentAnswer = answer;
   }
   public void CheckAnswer(string inputtext)
@@ -63,7 +63,8 @@ public class GameController : MonoBehaviour
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
           GameObject.Find("NodeGame (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           ClearMiniGame(currentId);
-          SetCurrentProperties(-1, -1, -1, false, "It has not been set yet.");
+          SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
+          currentIsSentCorrectAnswer = true;
         }
         else
         {
@@ -77,7 +78,8 @@ public class GameController : MonoBehaviour
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
           GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
-          SetCurrentProperties(-1, -1, -1, false, "It has not been set yet.");
+          SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
+          currentIsSentCorrectAnswer = true;
         }
         else if (inputtext != currentAnswer && currentState == 1)
         {
