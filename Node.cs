@@ -100,11 +100,6 @@ public class Node : MonoBehaviour, IPointerClickHandler
       }
     }
   }
-  void LoadImageByName(string name, GameObject obj)
-  {
-    // Sprite sprite = Resources.Load<Sprite>(name);
-    // obj.GetComponent<SpriteRenderer>().sprite = sprite;
-  }
 
   void DrowEdgeActive(GameObject node1, GameObject node2)
   {
