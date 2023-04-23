@@ -27,12 +27,16 @@ public class ObstacleBalloon : MonoBehaviour
   {
     // Set the "Balloon" game object active to show the animation
     balloon.SetActive(true);
+    // Disactivate the EventSystem to prevent the user from clicking any buttons
+    GameObject.Find("EventSystem").GetComponent<UnityEngine.EventSystems.EventSystem>().enabled = false;
 
     // Run "DeleteObstacleBalloons" in Animator
     animator.SetTrigger("DeleteObstacleBalloons");
   }
   public void Deactivate()
   {
+    //Activate the EventSystem
+    GameObject.Find("EventSystem").GetComponent<UnityEngine.EventSystems.EventSystem>().enabled = true;
     gameObject.SetActive(false);
   }
 }

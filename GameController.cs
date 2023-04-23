@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
   [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
+  [SerializeField] GameObject motosensimeta;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
@@ -56,6 +57,23 @@ public class GameController : MonoBehaviour
   }
   public void CheckAnswer(string inputtext)
   {
+    if (inputtext == "ホーキング" && currentAnswer == inputtext)
+    {
+      questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "クリア！！";
+      questionBalloon.SetActive(false);
+
+      SetCurrentProperties(-1, -1, -1, "ホーキング");
+      currentIsSentCorrectAnswer = false;
+    }
+    if (inputtext == "モトセンシメタ")
+    {
+      if (questionBalloon.activeSelf)
+      {
+        questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+      }
+      motosensimeta.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+
+    }
     if (currentState == 1 && !currentIsSentCorrectAnswer)
     {
       if (currentIsGameNode == 1)

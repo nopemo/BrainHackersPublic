@@ -5,6 +5,7 @@ using TMPro;
 using System.IO;
 using System.Text;
 
+
 [ExecuteInEditMode]
 public class TestEditMode : MonoBehaviour
 
@@ -14,6 +15,7 @@ public class TestEditMode : MonoBehaviour
   void Start()
   {
     Debug.Log("StartTestEditMode");
+    //search the objects with tag "ButtonWord"
   }
 
   void Update()
@@ -168,7 +170,7 @@ public class TestEditMode : MonoBehaviour
   {
     Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)> nodeData = new Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)>();
 
-    using (var reader = new StreamReader(filePath))
+    using (var reader = new StreamReader(filePath, Encoding.UTF8))
     {
       reader.ReadLine(); // ヘッダー行をスキップ
 
@@ -335,6 +337,42 @@ public class TestEditMode : MonoBehaviour
           nearNodeComponent.nearNodes.Add(node);
         }
       }
+    }
+  }
+  public void DisActivateFukidashi()
+  {
+    foreach (int _nodeid in targetNodes)
+    {
+      GameObject _node = GameObject.Find($"Node{(_nodeid > 90 ? "Game" : "Norm")} ({_nodeid})");
+      foreach (GameObject _deleteObstacle in _node.GetComponent<Node>().deleteObstacleBalloons)
+      {
+        _deleteObstacle.SetActive(false);
+      }
+    }
+  }
+  public void ActivateFukidashi()
+  {
+    foreach (int _nodeid in targetNodes)
+    {
+      GameObject _node = GameObject.Find($"Node{(_nodeid > 90 ? "Game" : "Norm")} ({_nodeid})");
+      foreach (GameObject _deleteObstacle in _node.GetComponent<Node>().deleteObstacleBalloons)
+      {
+        _deleteObstacle.SetActive(true);
+      }
+    }
+  }
+  public void InitializeTextOfInputButton()
+  {
+    List<GameObject> ButtonWords = new List<GameObject>();
+    GameObject[] _tmp = GameObject.FindGameObjectsWithTag("ButtonWord");
+    for (int i = 0; i < _tmp.Length; i++)
+    {
+      ButtonWords.Add(_tmp[i]);
+    }
+    foreach (GameObject buttonWord in ButtonWords)
+    {
+      buttonWord.GetComponent<InputWord>().InitializeText();
+
     }
   }
 }

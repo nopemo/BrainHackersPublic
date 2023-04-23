@@ -12,6 +12,16 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
   GameObject InputWordsField;
   void Awake()
   {
+    InitializeText();
+  }
+
+  public void OnPointerClick(PointerEventData eventData)
+  {
+    Debug.Log("Clicked on InputWord");
+    InputWordsField.GetComponent<InputWordsField>().SetFromWordButton(wordText);
+  }
+  public void InitializeText()
+  {
     //change the chlid TMPro text
     InputWordsField = GameObject.Find("InputWordsField");
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = wordText;
@@ -20,11 +30,5 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
     {
       gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
     }
-  }
-
-  public void OnPointerClick(PointerEventData eventData)
-  {
-    Debug.Log("Clicked on InputWord");
-    InputWordsField.GetComponent<InputWordsField>().SetFromWordButton(wordText);
   }
 }
