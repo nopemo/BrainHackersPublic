@@ -5,6 +5,7 @@ using TMPro;
 using System.IO;
 using System.Text;
 
+
 [ExecuteInEditMode]
 public class TestEditMode : MonoBehaviour
 
@@ -14,6 +15,7 @@ public class TestEditMode : MonoBehaviour
   void Start()
   {
     Debug.Log("StartTestEditMode");
+    //search the objects with tag "ButtonWord"
   }
 
   void Update()
@@ -23,6 +25,7 @@ public class TestEditMode : MonoBehaviour
     GameObject[] fukidashi = GameObject.FindGameObjectsWithTag("Fukidashi");
     // GameObject.Find("Clock").transform.position = new Vector3(0, 0, 0);
     Debug.Log("fukidashi.Length: " + fukidashi.Length);
+
     for (int i = 0; i < fukidashi.Length; i++)
     {
       //change the order in layer of the fukidashi
@@ -30,9 +33,14 @@ public class TestEditMode : MonoBehaviour
       //change the sorting layer and order in layer of the text and the fukidashi
 
       //find the child text in the hierarchy
-      fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
       fukidashi[i].GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+      fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+      // fukidashi[i].transform.Find("Balloon").GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+      // GameObject _tmp = fukidashi[i].transform.Find("Balloon").gameObject;
+      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
     }
+    InitializeTextOfInputButton();
   }
 
   void OnGUI()
@@ -163,7 +171,7 @@ public class TestEditMode : MonoBehaviour
   {
     Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)> nodeData = new Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)>();
 
-    using (var reader = new StreamReader(filePath))
+    using (var reader = new StreamReader(filePath, Encoding.UTF8))
     {
       reader.ReadLine(); // ヘッダー行をスキップ
 
@@ -264,14 +272,14 @@ public class TestEditMode : MonoBehaviour
     }
 
     string filePath = Path.Combine(Application.dataPath, "node_data.csv");
-    File.WriteAllText(filePath, csvData.ToString());
+    File.WriteAllText(filePath, csvData.ToString(), Encoding.UTF8);
   }
 
   private List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> ReadEdgeDataFromCsv(string filePath)
   {
     List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> edgeData = new List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)>();
 
-    using (var reader = new StreamReader(filePath))
+    using (var reader = new StreamReader(filePath, Encoding.UTF8))
     {
       reader.ReadLine(); // ヘッダー行をスキップ
 
@@ -314,5 +322,63 @@ public class TestEditMode : MonoBehaviour
         nodeBComponent.nearNodes.Add(nodeA);
       }
     }
+  }
+  public void ConfirmBidirection()
+  {
+    List<GameObject> allNodes = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
+    allNodes.AddRange(GameObject.FindGameObjectsWithTag("NodeGame"));
+    foreach (GameObject node in allNodes)
+    {
+      Node nodeComponent = node.GetComponent<Node>();
+      foreach (GameObject nearNode in nodeComponent.nearNodes)
+      {
+        Node nearNodeComponent = nearNode.GetComponent<Node>();
+        if (!nearNodeComponent.nearNodes.Contains(node))
+        {
+          nearNodeComponent.nearNodes.Add(node);
+        }
+      }
+    }
+  }
+  public void DisActivateFukidashi()
+  {
+    foreach (int _nodeid in targetNodes)
+    {
+      GameObject _node = GameObject.Find($"Node{(_nodeid > 90 ? "Game" : "Norm")} ({_nodeid})");
+      foreach (GameObject _deleteObstacle in _node.GetComponent<Node>().deleteObstacleBalloons)
+      {
+        _deleteObstacle.SetActive(false);
+      }
+    }
+  }
+  public void ActivateFukidashi()
+  {
+    foreach (int _nodeid in targetNodes)
+    {
+      GameObject _node = GameObject.Find($"Node{(_nodeid > 90 ? "Game" : "Norm")} ({_nodeid})");
+      foreach (GameObject _deleteObstacle in _node.GetComponent<Node>().deleteObstacleBalloons)
+      {
+        _deleteObstacle.SetActive(true);
+      }
+    }
+  }
+  public void InitializeTextOfInputButton()
+  {
+    List<GameObject> ButtonWords = new List<GameObject>();
+    GameObject[] _tmp = GameObject.FindGameObjectsWithTag("ButtonWord");
+    for (int i = 0; i < _tmp.Length; i++)
+    {
+      ButtonWords.Add(_tmp[i]);
+    }
+    foreach (GameObject buttonWord in ButtonWords)
+    {
+      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = buttonWord.GetComponent<InputWord>().wordText;
+      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = buttonWord.GetComponent<InputWord>().fontSize;
+      if (buttonWord.GetComponent<InputWord>().wordText.Length > 3)
+      {
+        buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
+      }
+    }
+
   }
 }

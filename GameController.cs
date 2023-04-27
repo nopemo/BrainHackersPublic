@@ -3,13 +3,14 @@ using UnityEngine.EventSystems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Collections;
 using TMPro;
 public class GameController : MonoBehaviour
 {
   int currentId = -1;
   int currentState = -1;
   int currentIsGameNode = -1;
-  bool currentIsSentCorrectAnswer = false;
+  public bool currentIsSentCorrectAnswer = false;
 
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -18,6 +19,8 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject startNode;
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
+  [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
+  [SerializeField] GameObject motosensimeta;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
@@ -28,7 +31,8 @@ public class GameController : MonoBehaviour
   }
   void Start()
   {
-    SetCurrentProperties(-1, -1, -1, false, "it has not been set.");
+    SetCurrentProperties(-1, -1, -1, "it has not been set.");
+    currentIsSentCorrectAnswer = false;
     startTime = DateTime.Now;
     startNode.GetComponent<Node>().ChangeState(2);
     ActivateInputWordsSpaces();
@@ -44,26 +48,41 @@ public class GameController : MonoBehaviour
 
     CircleTimer.GetComponent<CircleTimer>().UpdateTime(elapsedSeconds);
   }
-  public void SetCurrentProperties(int id, int state, int isGameNode, bool isSentCorrectAnswer, string answer)
+  public void SetCurrentProperties(int id, int state, int isGameNode, string answer)
   {
     currentId = id;
     currentState = state;
     currentIsGameNode = isGameNode;
-    currentIsSentCorrectAnswer = isSentCorrectAnswer;
     currentAnswer = answer;
   }
   public void CheckAnswer(string inputtext)
   {
-    if (currentState == 1)
+    if (inputtext == "ホーキング" && currentAnswer == inputtext)
+    {
+      questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "クリア！！";
+      questionBalloon.SetActive(false);
+
+      SetCurrentProperties(-1, -1, -1, "ホーキング");
+      currentIsSentCorrectAnswer = false;
+    }
+    if (inputtext == "モトセンシメタ")
+    {
+      if (questionBalloon.activeSelf)
+      {
+        questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+      }
+      motosensimeta.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+
+    }
+    if (currentState == 1 && !currentIsSentCorrectAnswer)
     {
       if (currentIsGameNode == 1)
       {
         if (inputtext == currentAnswer)
         {
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          GameObject.Find("NodeGame (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           ClearMiniGame(currentId);
-          SetCurrentProperties(-1, -1, -1, false, "It has not been set yet.");
+          currentIsSentCorrectAnswer = true;
         }
         else
         {
@@ -75,9 +94,8 @@ public class GameController : MonoBehaviour
         if (inputtext == currentAnswer && currentState == 1)
         {
           Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          GameObject.Find("NodeNorm (" + currentId.ToString() + ")").GetComponent<Node>().ChangeState(2);
           questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
-          SetCurrentProperties(-1, -1, -1, false, "It has not been set yet.");
+          currentIsSentCorrectAnswer = true;
         }
         else if (inputtext != currentAnswer && currentState == 1)
         {
@@ -99,7 +117,7 @@ public class GameController : MonoBehaviour
       listOfClearedGameNodeIds.Add(id);
     }
     ActivateInputWordsSpaces();
-    DeleteObstacleBalloons(id);
+    // DeleteObstacleBalloons(id);
   }
   List<int> ShuffleBoothIds(int numOfBooths)
   {
@@ -159,5 +177,34 @@ public class GameController : MonoBehaviour
     //Change Scene
     //Save the current properties
     //Prepare for the result scene
+  }
+  public void PlayAnimations()
+  {
+    GameObject _targetNode = GameObject.Find($"Node{(currentId > 90 ? "Game" : "Norm")} ({currentId})");
+    _targetNode.GetComponent<Node>().ChangeState(2);
+
+    float delay = delayOfObstacleBalloonDelete;
+    bool _isFirst = true;
+    foreach (GameObject _targetObstacleBalloon in _targetNode.GetComponent<Node>().deleteObstacleBalloons)
+    {
+      Debug.Log(_targetObstacleBalloon.name + " is playing animation");
+      if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf)
+        continue;
+      if (_isFirst)
+      {
+        _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+        _isFirst = false;
+      }
+      else
+      {
+        StartCoroutine(PlayAnimationWithDelay(_targetObstacleBalloon, delay));
+        delay += delayOfObstacleBalloonDelete;
+      }
+    }
+  }
+  IEnumerator PlayAnimationWithDelay(GameObject _targetObstacleBalloon, float delay)
+  {
+    yield return new WaitForSeconds(delay);
+    _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
   }
 }
