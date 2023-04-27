@@ -40,6 +40,7 @@ public class TestEditMode : MonoBehaviour
       // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
       // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
     }
+    InitializeTextOfInputButton();
   }
 
   void OnGUI()
@@ -271,14 +272,14 @@ public class TestEditMode : MonoBehaviour
     }
 
     string filePath = Path.Combine(Application.dataPath, "node_data.csv");
-    File.WriteAllText(filePath, csvData.ToString());
+    File.WriteAllText(filePath, csvData.ToString(), Encoding.UTF8);
   }
 
   private List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> ReadEdgeDataFromCsv(string filePath)
   {
     List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> edgeData = new List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)>();
 
-    using (var reader = new StreamReader(filePath))
+    using (var reader = new StreamReader(filePath, Encoding.UTF8))
     {
       reader.ReadLine(); // ヘッダー行をスキップ
 
@@ -371,8 +372,13 @@ public class TestEditMode : MonoBehaviour
     }
     foreach (GameObject buttonWord in ButtonWords)
     {
-      buttonWord.GetComponent<InputWord>().InitializeText();
-
+      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = buttonWord.GetComponent<InputWord>().wordText;
+      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = buttonWord.GetComponent<InputWord>().fontSize;
+      if (buttonWord.GetComponent<InputWord>().wordText.Length > 3)
+      {
+        buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
+      }
     }
+
   }
 }

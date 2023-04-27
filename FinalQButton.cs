@@ -45,7 +45,7 @@ public class FinalQButton : MonoBehaviour
     Debug.Log("Load image from " + "Questions/" + questionImageName);
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
-    GameController.GetComponent<GameController>().SetCurrentProperties(50, 1, 0, "ホーキング");
+    GameController.GetComponent<GameController>().SetCurrentProperties(51, 1, 0, "ホーキング");
     GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
   }
 }

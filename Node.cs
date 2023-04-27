@@ -43,6 +43,10 @@ public class Node : MonoBehaviour, IPointerClickHandler
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "Node";
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
     gameObject.transform.GetChild(0).gameObject.SetActive(false);
+    if (id > 40)
+    {
+      gameObject.transform.GetChild(0).gameObject.SetActive(false);
+    }
   }
 
   public void OnPointerClick(PointerEventData eventData)
@@ -69,11 +73,20 @@ public class Node : MonoBehaviour, IPointerClickHandler
     {
       //change the color to [UIColor colorWithRed:0.286f green:0.364f blue:0.396f alpha:1.000f];
       GetComponent<SpriteRenderer>().color = new Color(0.286f, 0.364f, 0.396f);
+      //change the size of the node
+      if (id != 0 && isGameNode == 0 && false)
+      {
+        transform.localScale = new Vector3(40f, 40f, 0.0f);
+      }
     }
     else if (state == 1)
     {
       //change the color to [UIColor colorWithRed:0.043f green:0.843f blue:0.843f alpha:1.000f]
       GetComponent<SpriteRenderer>().color = new Color(1.000f, 0.388f, 0.050f);
+      if (id != 0 && isGameNode == 0 && false)
+      {
+        transform.localScale = new Vector3(80f, 80f, 0.0f);
+      }
       foreach (GameObject node in nearNodes)
       {
         if (node.GetComponent<Node>().state == 0)
@@ -86,9 +99,17 @@ public class Node : MonoBehaviour, IPointerClickHandler
     {
       //change the color to [UIColor colorWithRed:1.000f green:0.388f blue:0.050f alpha:1.000f]
       GetComponent<SpriteRenderer>().color = new Color(0.043f, 0.843f, 0.843f);
+      if (id != 0 && isGameNode == 0 && false)
+      {
+        transform.localScale = new Vector3(80f, 80f, 0.0f);
+      }
       //change the near nodes to active except already active nodes
       foreach (GameObject node in nearNodes)
       {
+        if (node == null)
+        {
+          continue;
+        }
         Debug.Log("Here is " + node.name + "");
         if (node.GetComponent<Node>().state == 0)
         {
