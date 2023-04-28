@@ -56,13 +56,18 @@ public class TestEditMode : MonoBehaviour
   {
     string _tmpName;
     GameObject Edge = Resources.Load("Edge") as GameObject;
-    List<GameObject> nodeNorms = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
+    List<GameObject> nodeNorms = new List<GameObject>();
+    foreach (GameObject nodeNorm in GameObject.FindGameObjectsWithTag("NodeNorm"))
+    {
+      nodeNorms.Add(nodeNorm);
+    }
 
     StringBuilder csvData = new StringBuilder();
     csvData.AppendLine("NodeA_ID,NodeA_IsGameNode,NodeB_ID,NodeB_IsGameNode");
 
     foreach (GameObject nodeNorm in nodeNorms)
     {
+      Debug.Log("Current Debug point nodeNorm: " + nodeNorm.GetComponent<Node>().id);
       foreach (GameObject nearNode in nodeNorm.GetComponent<Node>().nearNodes)
       {
         csvData.AppendLine($"{nodeNorm.GetComponent<Node>().id},false,{nearNode.GetComponent<Node>().id},false");
@@ -80,30 +85,6 @@ public class TestEditMode : MonoBehaviour
         line.tag = "Edge";
       }
     }
-
-    //rather draw edges using limitDistance[0]
-    // for (int i = 0; i < nodeNorms.Count - 1; i++)
-    // {
-    //   for (int j = i + 1; j < nodeNorms.Count; j++)
-    //   {
-    //     if (Vector3.Distance(nodeNorms[i].transform.position, nodeNorms[j].transform.position) < limitDistance[0])
-    //     {
-    //       csvData.AppendLine($"{nodeNorms[i].GetComponent<Node>().id},false,{nodeNorms[j].GetComponent<Node>().id},false");
-    //       GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
-    //       line.GetComponent<Renderer>().sortingLayerName = "Edge";
-    //       LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-    //       lineRenderer.SetPosition(0, nodeNorms[i].transform.position);
-    //       lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
-    //       _tmpName = "Edge (" + nodeNorms[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
-    //       if (GameObject.Find(_tmpName))
-    //       {
-    //         DestroyImmediate(GameObject.Find(_tmpName));
-    //       }
-    //       line.name = _tmpName;
-    //       line.tag = "Edge";
-    //     }
-    //   }
-    // }
 
     List<GameObject> nodeGames = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeGame"));
     foreach (GameObject nodeGame in nodeGames)
@@ -125,31 +106,6 @@ public class TestEditMode : MonoBehaviour
         line.tag = "Edge";
       }
     }
-
-    //rather draw edges using limitDistance[1]
-    // for (int i = 0; i < nodeGames.Count; i++)
-    // {
-    //   for (int j = 0; j < nodeNorms.Count; j++)
-    //   {
-    //     if (Vector3.Distance(nodeGames[i].transform.position, nodeNorms[j].transform.position) < limitDistance[1])
-    //     {
-    //       csvData.AppendLine($"{nodeGames[i].GetComponent<Node>().id},true,{nodeNorms[j].GetComponent<Node>().id},false");
-    //       GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
-    //       line.GetComponent<Renderer>().sortingLayerName = "Edge";
-    //       LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-    //       lineRenderer.SetPosition(0, nodeGames[i].transform.position);
-    //       lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
-    //       _tmpName = "Edge (" + nodeGames[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
-    //       if (GameObject.Find(_tmpName))
-    //       {
-    //         DestroyImmediate(GameObject.Find(_tmpName));
-    //       }
-    //       line.name = _tmpName;
-    //       line.tag = "Edge";
-    //     }
-    //   }
-    // }
-
     string filePath = Path.Combine(Application.dataPath, "edges.csv");
     File.WriteAllText(filePath, csvData.ToString());
   }

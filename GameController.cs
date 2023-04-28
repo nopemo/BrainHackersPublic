@@ -10,19 +10,24 @@ public class GameController : MonoBehaviour
   int currentId = -1;
   int currentState = -1;
   int currentIsGameNode = -1;
+  bool isExOpenned = false;
   public bool currentIsSentCorrectAnswer = false;
 
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
 
+  [SerializeField] int TeamNumber = 0;
   [SerializeField] GameObject questionBalloon;
   [SerializeField] GameObject startNode;
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
   [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
   [SerializeField] GameObject motosensimeta;
+  [SerializeField] GameObject teamNumberText;
+  [SerializeField] GameObject insideBrain;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
+  Dictionary<string, int> answerToId = new Dictionary<string, int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
 
   void Awake()
@@ -36,6 +41,7 @@ public class GameController : MonoBehaviour
     startTime = DateTime.Now;
     startNode.GetComponent<Node>().ChangeState(2);
     ActivateInputWordsSpaces();
+    teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
   }
   void Update()
   {
@@ -57,10 +63,14 @@ public class GameController : MonoBehaviour
   }
   public void CheckAnswer(string inputtext)
   {
-    if (inputtext == "ホーキング" && currentAnswer == inputtext)
+    if (inputtext == "ホーキング")
     {
-      questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "クリア！！";
-      questionBalloon.SetActive(false);
+      if (questionBalloon.activeSelf)
+      {
+        questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+      }
+      //WRITE ME
+      //Cleared text
 
       SetCurrentProperties(-1, -1, -1, "ホーキング");
       currentIsSentCorrectAnswer = false;
@@ -73,6 +83,24 @@ public class GameController : MonoBehaviour
       }
       motosensimeta.GetComponent<ObstacleBalloon>().DisactivateAnimation();
 
+    }
+    //check if the dictionary keys contain the inputtext
+    if (answerToId.ContainsKey(inputtext))
+    {
+      if (currentId == answerToId[inputtext] && questionBalloon.activeSelf)
+      {
+        if (currentIsGameNode == 1)
+        {
+          ClearMiniGame(currentId);
+          currentIsSentCorrectAnswer = true;
+        }
+        else if (currentIsGameNode == 0 && currentState == 1)
+        {
+          questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
+          currentIsSentCorrectAnswer = true;
+        }
+        questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+      }
     }
     if (currentState == 1 && !currentIsSentCorrectAnswer)
     {
@@ -115,6 +143,11 @@ public class GameController : MonoBehaviour
     if (!(listOfClearedGameNodeIds.Contains(id)))
     {
       listOfClearedGameNodeIds.Add(id);
+    }
+    if (!isExOpenned)
+    {
+      //Run the Animation Trigger "ExpandTrigger"
+      insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
     }
     ActivateInputWordsSpaces();
     // DeleteObstacleBalloons(id);
@@ -206,5 +239,12 @@ public class GameController : MonoBehaviour
   {
     yield return new WaitForSeconds(delay);
     _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+  }
+  public void SetAnswerToIdDictionary(string _answer, int _id)
+  {
+    if (!answerToId.ContainsKey(_answer))
+    {
+      answerToId.Add(_answer, _id);
+    }
   }
 }

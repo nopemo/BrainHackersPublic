@@ -43,6 +43,10 @@ public class Node : MonoBehaviour, IPointerClickHandler
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "Node";
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
     gameObject.transform.GetChild(0).gameObject.SetActive(false);
+    GameController.GetComponent<GameController>().SetAnswerToIdDictionary(questionAnswer, id);
+  }
+  void Start()
+  {
     if (id > 40)
     {
       gameObject.transform.GetChild(0).gameObject.SetActive(false);

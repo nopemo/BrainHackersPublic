@@ -33,6 +33,7 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
     }
     GameController.GetComponent<GameController>().SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
     balloon.transform.Find("QuestionImage").GetComponent<SpriteRenderer>().sprite = null;
+
     balloon.SetActive(false);
   }
 }
