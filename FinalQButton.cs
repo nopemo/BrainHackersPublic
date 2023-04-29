@@ -14,7 +14,9 @@ public class FinalQButton : MonoBehaviour
   GameObject QuestionBalloon;
   GameObject GameController;
   public int state = 1;
-  string questionImageName = "FinalQ";
+  public string questionImageName = "FinalQ";
+  public string questionText = "これさえ答えられれば...！";
+  public string correctAnswer = "ホーキング";
   void Awake()
   {
     QuestionBalloon = GameObject.Find("Question");
@@ -36,7 +38,7 @@ public class FinalQButton : MonoBehaviour
     {
       // Add the question text below the image.
       Debug.Log("Not clear");
-      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "これさえ答えられれば...！";
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = questionText;
     }
     // Get the "QuestionImage" child object of the balloon
     GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
@@ -45,7 +47,7 @@ public class FinalQButton : MonoBehaviour
     Debug.Log("Load image from " + "Questions/" + questionImageName);
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
-    GameController.GetComponent<GameController>().SetCurrentProperties(51, 1, 0, "ホーキング");
+    GameController.GetComponent<GameController>().SetCurrentProperties(51, 1, 0, correctAnswer);
     GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
   }
 }
