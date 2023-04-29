@@ -43,9 +43,13 @@ public class Node : MonoBehaviour, IPointerClickHandler
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "Node";
     gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
     gameObject.transform.GetChild(0).gameObject.SetActive(false);
-    if (id > 40)
+    GameController.GetComponent<GameController>().SetAnswerToIdDictionary(questionAnswer, id);
+  }
+  void Start()
+  {
+    if (id > 40 && isGameNode == 0)
     {
-      gameObject.transform.GetChild(0).gameObject.SetActive(false);
+      gameObject.SetActive(false);
     }
   }
 
@@ -231,5 +235,11 @@ public class Node : MonoBehaviour, IPointerClickHandler
       Debug.LogWarning("No number found in the object name");
       return -1;
     }
+  }
+  public void ActivateAnimation()
+  {
+    //run the animation with trigger
+    gameObject.SetActive(true);
+    gameObject.GetComponent<Animator>().SetTrigger("ActivateNode");
   }
 }

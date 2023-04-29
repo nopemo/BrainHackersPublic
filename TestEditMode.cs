@@ -12,6 +12,7 @@ public class TestEditMode : MonoBehaviour
 {
   [SerializeField] int[] limitDistance;
   [SerializeField] List<int> targetNodes;
+  [SerializeField] GameObject nodeParent;
   void Start()
   {
     Debug.Log("StartTestEditMode");
@@ -56,7 +57,21 @@ public class TestEditMode : MonoBehaviour
   {
     string _tmpName;
     GameObject Edge = Resources.Load("Edge") as GameObject;
-    List<GameObject> nodeNorms = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
+    // List<GameObject> nodeNorms = new List<GameObject>();
+    // foreach (GameObject nodeNorm in GameObject.FindGameObjectsWithTag("NodeNorm"))
+    // {
+    //   nodeNorms.Add(nodeNorm);
+    // }
+    List<GameObject> nodeNorms = new List<GameObject>();
+    //find the children of NodeParent
+    foreach (Transform child in nodeParent.transform)
+    {
+      //if active
+      if (child.gameObject.activeSelf)
+      {
+        nodeNorms.Add(child.gameObject);
+      }
+    }
 
     StringBuilder csvData = new StringBuilder();
     csvData.AppendLine("NodeA_ID,NodeA_IsGameNode,NodeB_ID,NodeB_IsGameNode");
@@ -81,30 +96,6 @@ public class TestEditMode : MonoBehaviour
       }
     }
 
-    //rather draw edges using limitDistance[0]
-    // for (int i = 0; i < nodeNorms.Count - 1; i++)
-    // {
-    //   for (int j = i + 1; j < nodeNorms.Count; j++)
-    //   {
-    //     if (Vector3.Distance(nodeNorms[i].transform.position, nodeNorms[j].transform.position) < limitDistance[0])
-    //     {
-    //       csvData.AppendLine($"{nodeNorms[i].GetComponent<Node>().id},false,{nodeNorms[j].GetComponent<Node>().id},false");
-    //       GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
-    //       line.GetComponent<Renderer>().sortingLayerName = "Edge";
-    //       LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-    //       lineRenderer.SetPosition(0, nodeNorms[i].transform.position);
-    //       lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
-    //       _tmpName = "Edge (" + nodeNorms[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
-    //       if (GameObject.Find(_tmpName))
-    //       {
-    //         DestroyImmediate(GameObject.Find(_tmpName));
-    //       }
-    //       line.name = _tmpName;
-    //       line.tag = "Edge";
-    //     }
-    //   }
-    // }
-
     List<GameObject> nodeGames = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeGame"));
     foreach (GameObject nodeGame in nodeGames)
     {
@@ -125,32 +116,15 @@ public class TestEditMode : MonoBehaviour
         line.tag = "Edge";
       }
     }
-
-    //rather draw edges using limitDistance[1]
-    // for (int i = 0; i < nodeGames.Count; i++)
-    // {
-    //   for (int j = 0; j < nodeNorms.Count; j++)
-    //   {
-    //     if (Vector3.Distance(nodeGames[i].transform.position, nodeNorms[j].transform.position) < limitDistance[1])
-    //     {
-    //       csvData.AppendLine($"{nodeGames[i].GetComponent<Node>().id},true,{nodeNorms[j].GetComponent<Node>().id},false");
-    //       GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
-    //       line.GetComponent<Renderer>().sortingLayerName = "Edge";
-    //       LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-    //       lineRenderer.SetPosition(0, nodeGames[i].transform.position);
-    //       lineRenderer.SetPosition(1, nodeNorms[j].transform.position);
-    //       _tmpName = "Edge (" + nodeGames[i].GetComponent<Node>().id.ToString("00") + "," + nodeNorms[j].GetComponent<Node>().id.ToString("00") + ")";
-    //       if (GameObject.Find(_tmpName))
-    //       {
-    //         DestroyImmediate(GameObject.Find(_tmpName));
-    //       }
-    //       line.name = _tmpName;
-    //       line.tag = "Edge";
-    //     }
-    //   }
-    // }
-
     string filePath = Path.Combine(Application.dataPath, "edges.csv");
+
+    // 既存のCSVファイルが存在するか確認
+    if (File.Exists(filePath))
+    {
+      // ファイルを削除
+      File.Delete(filePath);
+    }
+
     File.WriteAllText(filePath, csvData.ToString());
   }
   public void DeleteCurrentEdges()
@@ -200,10 +174,36 @@ public class TestEditMode : MonoBehaviour
 
     Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)> nodeData = ReadNodeDataFromCsv(nodeDataFilePath);
     List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> edgeData = ReadEdgeDataFromCsv(edgeFilePath);
+    List<GameObject> allchildrennodes = new List<GameObject>();
+    foreach (Transform child in nodeParent.transform)
+    {
+      //if active
+      if (child.gameObject.activeSelf)
+      {
+        allchildrennodes.Add(child.gameObject);
+      }
+    }
+    //find objects whose name starts with "NodeNorm" or "NodeGame"
+    //if it contains "NodeNorm", add to the list "nodeObjectsList"
+    //if it contains "NodeGame", add to the list "gameNodeObjectsList"
+    //Dont use "FindGameObjectsWithTag" because it has bugs
+    List<GameObject> nodeObjectsList = new List<GameObject>();
+    List<GameObject> gameNodeObjectsList = new List<GameObject>();
+    foreach (GameObject node in allchildrennodes)
+    {
+      if (node.name.Contains("NodeNorm"))
+      {
+        nodeObjectsList.Add(node);
+      }
+      else if (node.name.Contains("NodeGame"))
+      {
+        gameNodeObjectsList.Add(node);
+      }
+    }
+    //convert the list to array
+    GameObject[] nodeObjects = nodeObjectsList.ToArray();
+    GameObject[] gameNodeObjects = gameNodeObjectsList.ToArray();
 
-
-    GameObject[] nodeObjects = GameObject.FindGameObjectsWithTag("NodeNorm");
-    GameObject[] gameNodeObjects = GameObject.FindGameObjectsWithTag("NodeGame");
 
     // オブジェクトの座標を更新
     foreach (KeyValuePair<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)> nodeEntry in nodeData)
@@ -262,8 +262,12 @@ public class TestEditMode : MonoBehaviour
     StringBuilder csvData = new StringBuilder();
     csvData.AppendLine("Node_ID,Node_Position,Node_IsGameNode,Node_QuestionImageId,Node_QuestionImageName,Node_QuestionAnswer");
 
-    List<GameObject> allNodes = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
-    allNodes.AddRange(GameObject.FindGameObjectsWithTag("NodeGame"));
+    List<GameObject> allNodes = new List<GameObject>();
+    //find the children of the parent "NodeParent" in serializefield
+    foreach (Transform child in nodeParent.transform)
+    {
+      allNodes.Add(child.gameObject);
+    }
 
     foreach (GameObject node in allNodes)
     {
@@ -272,6 +276,10 @@ public class TestEditMode : MonoBehaviour
     }
 
     string filePath = Path.Combine(Application.dataPath, "node_data.csv");
+    if (File.Exists(filePath))
+    {
+      File.Delete(filePath);
+    }
     File.WriteAllText(filePath, csvData.ToString(), Encoding.UTF8);
   }
 
@@ -325,8 +333,12 @@ public class TestEditMode : MonoBehaviour
   }
   public void ConfirmBidirection()
   {
-    List<GameObject> allNodes = new List<GameObject>(GameObject.FindGameObjectsWithTag("NodeNorm"));
-    allNodes.AddRange(GameObject.FindGameObjectsWithTag("NodeGame"));
+    List<GameObject> allNodes = new List<GameObject>();
+    //find the children of the parent "NodeParent" in serializefield
+    foreach (Transform child in nodeParent.transform)
+    {
+      allNodes.Add(child.gameObject);
+    }
     foreach (GameObject node in allNodes)
     {
       Node nodeComponent = node.GetComponent<Node>();
