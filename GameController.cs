@@ -22,9 +22,12 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
   [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
+  // [SerializeField] float delayOfNodeExActivate = 0.4f;
   [SerializeField] GameObject motosensimeta;
   [SerializeField] GameObject teamNumberText;
   [SerializeField] GameObject insideBrain;
+  [SerializeField] List<GameObject> nodeExs;
+  [SerializeField] GameObject nodeParent;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   Dictionary<string, int> answerToId = new Dictionary<string, int>();
@@ -148,6 +151,8 @@ public class GameController : MonoBehaviour
     {
       //Run the Animation Trigger "ExpandTrigger"
       insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
+
+      NodeExActivateAnimations();
     }
     ActivateInputWordsSpaces();
     // DeleteObstacleBalloons(id);
@@ -235,11 +240,34 @@ public class GameController : MonoBehaviour
       }
     }
   }
+  public void NodeExActivateAnimations()
+  {
+    List<GameObject> _allNodes = new List<GameObject>();
+    //find the children of the nodeParent
+    foreach (Transform _child in nodeParent.transform)
+    {
+      _allNodes.Add(_child.gameObject);
+    }
+
+    foreach (GameObject _targetExNode in nodeExs)
+    {
+      _targetExNode.SetActive(true);
+    }
+    foreach (GameObject _targetNode in _allNodes)
+    {
+      _targetNode.GetComponent<Node>().ChangeState(_targetNode.GetComponent<Node>().state);
+    }
+  }
   IEnumerator PlayAnimationWithDelay(GameObject _targetObstacleBalloon, float delay)
   {
     yield return new WaitForSeconds(delay);
     _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
   }
+  // IEnumerator NodeActivateAnimationWithDelay(GameObject _targetExNode, float delay)
+  // {
+  //   yield return new WaitForSeconds(delay);
+  //   _targetExNode.GetComponent<Node>().ActivateAnimation();
+  // }
   public void SetAnswerToIdDictionary(string _answer, int _id)
   {
     if (!answerToId.ContainsKey(_answer))
