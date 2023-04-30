@@ -31,20 +31,20 @@ public class FinalQButton : MonoBehaviour
     if (state == 2)
     {
       // Add the clear text below the image.
-      Debug.Log("Already clear");
+      Debug.Log("Question of Node " + state + " is activated, but it is already cleared.");
       QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "ゲームをすでにクリアしています。";
     }
     else
     {
       // Add the question text below the image.
-      Debug.Log("Not clear");
+      Debug.Log("Question of Node " + state + " is activated, and it is not cleared yet.");
       QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = questionText;
     }
     // Get the "QuestionImage" child object of the balloon
     GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
     // Load the image from the Resources/Questions folder based on the id
     Sprite questionSprite = Resources.Load<Sprite>("Questions/" + questionImageName);
-    Debug.Log("Load image from " + "Questions/" + questionImageName);
+    Debug.Log("Question of Node " + state + " is activated, and load image from " + "Questions/" + questionImageName);
     // Set the loaded image to the "QuestionImage" object using SpriteRenderer
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
     GameController.GetComponent<GameController>().SetCurrentProperties(51, 1, 0, correctAnswer);

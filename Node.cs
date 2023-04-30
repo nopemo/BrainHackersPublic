@@ -33,7 +33,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     QuestionBalloon = GameObject.Find("Question");
     GameController = GameObject.Find("GameController");
     int[] limitDistance = { 150, 200 }; // GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
-    // nodeSprites = Resources.LoadAll<Sprite>("node");
+                                        // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
     EdgeActive = Resources.Load("EdgeActive") as GameObject;
     Debug.Log("nearNodes.Count:" + nearNodes.Count.ToString());
@@ -53,7 +53,8 @@ public class Node : MonoBehaviour, IPointerClickHandler
     }
   }
 
-  public void OnPointerClick(PointerEventData eventData)
+  public virtual void OnPointerClick(PointerEventData eventData)
+  // public void OnClick()
   {
     Debug.Log("Clicked on node");
     if (state >= 1)

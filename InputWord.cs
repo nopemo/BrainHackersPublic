@@ -17,7 +17,6 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
 
   public void OnPointerClick(PointerEventData eventData)
   {
-    Debug.Log("Clicked on InputWord");
     InputWordsField.GetComponent<InputWordsField>().SetFromWordButton(wordText);
   }
   public void InitializeText()
