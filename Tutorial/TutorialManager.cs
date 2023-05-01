@@ -6,10 +6,11 @@ using TMPro;
 public class TutorialData
 {
   public string SectionName;
-  public GameObject UnMaskObject;
+  public List<GameObject> UnMaskObjects;
   public List<GameObject> TouchableObjects;
+  public List<GameObject> AdditionalObjects;
   public bool IsUseOkButton;
-  public string WindowText;
+  [TextArea] public string WindowText;
   public bool IsExeptional;
   public GameObject TriggerObject;
 }
@@ -21,16 +22,48 @@ public class TutorialManager : MonoBehaviour
   [SerializeField] GameObject okButton;
   [SerializeField] GameObject changeSceneButton;
   [SerializeField] GameObject textWindow;
+  [SerializeField] GameObject node1;
+  [SerializeField] GameObject node2;
+  [SerializeField] GameObject finalQ;
   int currentTutorialSectionNumber = 0;
   Dictionary<string, TutorialData> tutorialData;
   void Start()
   {
     currentTutorialSectionNumber = 0;
-    StartTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
     tutorialData = new Dictionary<string, TutorialData>();
     foreach (TutorialData tutorialDataItem in tutorialDataList)
     {
       tutorialData.Add(tutorialDataItem.SectionName, tutorialDataItem);
+    }
+    StartTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
+    changeSceneButton.SetActive(false);
+  }
+
+  void Update()
+  {
+    if (tutorialData[tutorialOrder[currentTutorialSectionNumber]].IsExeptional)
+    {
+      if (tutorialOrder[currentTutorialSectionNumber] == "Node1")
+      {
+        if (node1.GetComponent<Node>().GetState() == 2)
+        {
+          NextSection();
+        }
+      }
+      if (tutorialOrder[currentTutorialSectionNumber] == "Node2")
+      {
+        if (node2.GetComponent<Node>().GetState() == 2)
+        {
+          NextSection();
+        }
+      }
+      else if (tutorialOrder[currentTutorialSectionNumber] == "FinalQ")
+      {
+        if (finalQ.GetComponent<FinalQButton>().GetState() == 2)
+        {
+          NextSection();
+        }
+      }
     }
   }
 
@@ -46,7 +79,19 @@ public class TutorialManager : MonoBehaviour
   }
   void StartTutorialSection(string sectionName)
   {
-    tutorialData[sectionName].UnMaskObject.SetActive(true);
+    // tutorialData[sectionName].UnMaskObject.SetActive(true);
+    foreach (GameObject additionalObject in tutorialData[sectionName].AdditionalObjects)
+    {
+      additionalObject.SetActive(true);
+    }
+    foreach (GameObject unMaskObject in tutorialData[sectionName].UnMaskObjects)
+    {
+      unMaskObject.SetActive(true);
+      if (unMaskObject.GetComponent<Animator>() != null)
+      {
+        unMaskObject.GetComponent<Animator>().SetTrigger("Start");
+      }
+    }
     okButton.SetActive(tutorialData[sectionName].IsUseOkButton);
     List<GameObject> _touchableObjects = tutorialData[sectionName].TouchableObjects;
     foreach (GameObject touchableObject in _touchableObjects)
@@ -58,7 +103,15 @@ public class TutorialManager : MonoBehaviour
   }
   void StopTutorialSection(string sectionName)
   {
-    tutorialData[sectionName].UnMaskObject.SetActive(false);
+    foreach (GameObject additionalObject in tutorialData[sectionName].AdditionalObjects)
+    {
+      additionalObject.SetActive(false);
+    }
+    // tutorialData[sectionName].UnMaskObject.SetActive(false);
+    foreach (GameObject unMaskObject in tutorialData[sectionName].UnMaskObjects)
+    {
+      unMaskObject.SetActive(false);
+    }
     okButton.SetActive(false);
     changeSceneButton.SetActive(false);
     List<GameObject> _touchableObjects = tutorialData[sectionName].TouchableObjects;

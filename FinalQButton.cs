@@ -15,7 +15,7 @@ public class FinalQButton : MonoBehaviour
   GameObject GameController;
   public int state = 1;
   public string questionImageName = "FinalQ";
-  public string questionText = "これさえ答えられれば...！";
+  public string questionText = "これさえ答えられれば...!";
   public string correctAnswer = "ホーキング";
   void Awake()
   {
@@ -49,5 +49,13 @@ public class FinalQButton : MonoBehaviour
     questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
     GameController.GetComponent<GameController>().SetCurrentProperties(51, 1, 0, correctAnswer);
     GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
+  }
+  public int GetState()
+  {
+    return state;
+  }
+  public void SetState(int _state)
+  {
+    state = _state;
   }
 }
