@@ -6,9 +6,11 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
 {
   public GameObject balloon;
   GameObject GameController;
+  bool isTouchable = true;
   void Awake()
   {
     //find the parent balloon
+    SetTouchable(true);
     balloon = gameObject.transform.parent.gameObject;
     GameController = GameObject.Find("GameController");
   }
@@ -21,6 +23,10 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
   }
   public void OnPointerClick(PointerEventData eventData)
   {
+    if (!isTouchable)
+    {
+      return;
+    }
     Debug.Log("Clicked on DisactivateButtonBalloon");
     DisactivateBalloon();
   }
@@ -35,5 +41,13 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
     balloon.transform.Find("QuestionImage").GetComponent<SpriteRenderer>().sprite = null;
 
     balloon.SetActive(false);
+  }
+  public void SetTouchable(bool touchable)
+  {
+    isTouchable = touchable;
+  }
+  public bool GetTouchable()
+  {
+    return isTouchable;
   }
 }

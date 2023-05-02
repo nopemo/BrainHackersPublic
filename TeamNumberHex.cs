@@ -6,17 +6,16 @@ using TMPro;
 public class TeamNumberHex : MonoBehaviour
 {
   // Start is called before the first frame update
-  void Start()
+  bool isSetTeamNumber = false;
+  void Update()
   {
-    GameObject property = GameObject.Find("Property");
-    if (property != null)
+    if (Property.Instance != null)
     {
-      Debug.Log("Property found and TeamNumber is " + property.GetComponent<Property>().GetNumber("TeamNumber"));
-      SetTeamNumber(property.GetComponent<Property>().GetNumber("TeamNumber"));
-    }
-    else
-    {
-      Debug.Log("Property not found");
+      if (!isSetTeamNumber)
+      {
+        SetTeamNumber(Property.Instance.GetNumber("TeamNumber"));
+        isSetTeamNumber = true;
+      }
     }
   }
   public void SetTeamNumber(int teamNumber)

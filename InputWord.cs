@@ -10,14 +10,20 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
   public string wordText = "アアア";
   public int fontSize = 36;
   GameObject InputWordsField;
+  bool isTouchable = true;
+
   void Awake()
   {
+    SetTouchable(true);
     InitializeText();
   }
 
   public void OnPointerClick(PointerEventData eventData)
   {
-    Debug.Log("Clicked on InputWord");
+    if (!isTouchable)
+    {
+      return;
+    }
     InputWordsField.GetComponent<InputWordsField>().SetFromWordButton(wordText);
   }
   public void InitializeText()
@@ -30,5 +36,13 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
     {
       gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
     }
+  }
+  public void SetTouchable(bool touchable)
+  {
+    isTouchable = touchable;
+  }
+  public bool GetTouchable()
+  {
+    return isTouchable;
   }
 }

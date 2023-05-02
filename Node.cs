@@ -10,6 +10,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
   public int isGameNode = 0;
   public int state = 0;
   public int id = 0;
+  bool isTouchable = true;
   /* 0 = not active
    * 1 = active but not clear
    * 2 = clear
@@ -25,6 +26,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
   GameObject GameController;
   void Awake()
   {
+    SetTouchable(true);
     id = ExtractNumberFromObjectName(gameObject);
     if (gameObject.name.Contains("Game"))
     {
@@ -33,7 +35,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     QuestionBalloon = GameObject.Find("Question");
     GameController = GameObject.Find("GameController");
     int[] limitDistance = { 150, 200 }; // GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
-    // nodeSprites = Resources.LoadAll<Sprite>("node");
+                                        // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
     EdgeActive = Resources.Load("EdgeActive") as GameObject;
     Debug.Log("nearNodes.Count:" + nearNodes.Count.ToString());
@@ -54,7 +56,12 @@ public class Node : MonoBehaviour, IPointerClickHandler
   }
 
   public void OnPointerClick(PointerEventData eventData)
+  // public void OnClick()
   {
+    if (!isTouchable)
+    {
+      return;
+    }
     Debug.Log("Clicked on node");
     if (state >= 1)
     {
@@ -138,6 +145,11 @@ public class Node : MonoBehaviour, IPointerClickHandler
     if (GameObject.Find(anotherEdgeName))
     {
       Destroy(GameObject.Find(anotherEdgeName));
+    }
+    //check if node1 and node2 are setactive(true)
+    if (!node1.activeSelf || !node2.activeSelf)
+    {
+      return;
     }
     GameObject edge = Instantiate(EdgeActive);
     edge.transform.SetParent(GameObject.Find("Edges").transform);
@@ -241,5 +253,17 @@ public class Node : MonoBehaviour, IPointerClickHandler
     //run the animation with trigger
     gameObject.SetActive(true);
     gameObject.GetComponent<Animator>().SetTrigger("ActivateNode");
+  }
+  public int GetState()
+  {
+    return state;
+  }
+  public void SetTouchable(bool touchable)
+  {
+    isTouchable = touchable;
+  }
+  public bool GetTouchable()
+  {
+    return isTouchable;
   }
 }
