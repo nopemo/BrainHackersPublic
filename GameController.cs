@@ -29,6 +29,7 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject insideBrain;
   [SerializeField] List<GameObject> nodeExs;
   [SerializeField] GameObject nodeParent;
+  [SerializeField] GameObject finalQButton;
   [SerializeField] List<GameObject> minigameWindows;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
@@ -79,9 +80,20 @@ public class GameController : MonoBehaviour
       }
       //WRITE ME
       //Cleared text
-
       SetCurrentProperties(-1, -1, -1, "ホーキング");
       currentIsSentCorrectAnswer = false;
+    }
+    if (inputtext == "イチニサンゴ")
+    {
+      if (questionBalloon.activeSelf)
+      {
+        questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+      }
+      //WRITE ME
+      //Cleared text
+      SetCurrentProperties(-1, -1, -1, "イチニサンゴ");
+      currentIsSentCorrectAnswer = false;
+      finalQButton.GetComponent<FinalQButton>().SetState(2);
     }
     if (inputtext == "モトセンシメタ")
     {
@@ -147,13 +159,6 @@ public class GameController : MonoBehaviour
     if (!(listOfClearedGameNodeIds.Contains(id)))
     {
       listOfClearedGameNodeIds.Add(id);
-    }
-    if (!isExOpenned)
-    {
-      //Run the Animation Trigger "ExpandTrigger"
-      insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
-
-      NodeExActivateAnimations();
     }
     ActivateInputWordsSpaces();
     // DeleteObstacleBalloons(id);
@@ -274,6 +279,27 @@ public class GameController : MonoBehaviour
     if (!answerToId.ContainsKey(_answer))
     {
       answerToId.Add(_answer, _id);
+    }
+  }
+  public void CalcTotalNumOfClearedNodes()
+  {
+    int _totalNumOfClearedNodes = 0;
+    foreach (Transform _nodeTransform in nodeParent.transform)
+    {
+      if (_nodeTransform.gameObject.GetComponent<Node>().state == 2)
+      {
+        _totalNumOfClearedNodes++;
+      }
+    }
+    if (_totalNumOfClearedNodes >= 45)
+    {
+      if (!isExOpenned)
+      {
+        //Run the Animation Trigger "ExpandTrigger"
+        isExOpenned = true;
+        insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
+        NodeExActivateAnimations();
+      }
     }
   }
   public void ActivateMinigameWindow(int _id)

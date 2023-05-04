@@ -5,7 +5,6 @@ using TMPro;
 using System.IO;
 using System.Text;
 
-
 [ExecuteInEditMode]
 public class TestEditMode : MonoBehaviour
 
@@ -42,6 +41,12 @@ public class TestEditMode : MonoBehaviour
       // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
     }
     InitializeTextOfInputButton();
+
+    foreach (Transform nodeTrans in nodeParent.transform)
+    {
+      nodeTrans.GetChild(0).GetComponent<TextMeshProUGUI>().text = nodeTrans.GetComponent<Node>().id.ToString();
+      nodeTrans.GetChild(0).GetComponent<Canvas>().sortingLayerName = "Node";
+    }
   }
 
   void OnGUI()
@@ -221,10 +226,12 @@ public class TestEditMode : MonoBehaviour
       {
         nodeToUpdate.transform.position = nodeEntry.Value.position;
         Node nodeComponent = nodeToUpdate.GetComponent<Node>();
+        nodeComponent.id = nodeEntry.Value.id;
         nodeComponent.isGameNode = nodeEntry.Value.isGameNode ? 1 : 0;
         nodeComponent.questionImageId = nodeEntry.Value.questionImageId;
         nodeComponent.questionImageName = nodeEntry.Value.questionImageName;
         nodeComponent.questionAnswer = nodeEntry.Value.questionAnswer;
+        Debug.Log($"Updated node {nodeEntry.Key}");
       }
     }
 
