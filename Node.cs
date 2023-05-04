@@ -192,18 +192,12 @@ public class Node : MonoBehaviour, IPointerClickHandler
   }
   public void ActivateMiniGameBalloon(int state, int id, string questionAnswer)
   {
-    // Activate the balloon
-    QuestionBalloon.SetActive(true);
 
     // Change the image of the balloon child "QuestionImage" to /Assets/Resources/Questions/Qxx.png
     GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
     if (state == 2)
     {
-      // Add the clear text below the image.
-      Debug.Log("Already clear");
-      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "もうすでに解決している。";
-      Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGameCleared");
-      questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+      GameController.GetComponent<GameController>().ActivateMinigameWindow(id);
     }
     else
     {
@@ -213,12 +207,12 @@ public class Node : MonoBehaviour, IPointerClickHandler
       QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "場所" + boothIds[id % 4] + "へ向かおう!";
       Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGame" + boothIds[id % 4].ToString("D2"));
       questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+      // Get the "QuestionImage" child object of the balloon
+      // Load the image from the Resources/Questions folder based on the id
+      // Set the loaded image to the "QuestionImage" object using SpriteRenderer
+      GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, questionAnswer);
+      GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
     }
-    // Get the "QuestionImage" child object of the balloon
-    // Load the image from the Resources/Questions folder based on the id
-    // Set the loaded image to the "QuestionImage" object using SpriteRenderer
-    GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, questionAnswer);
-    GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
   }
   int ExtractNumberFromObjectName(GameObject obj)
   {
