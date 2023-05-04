@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
   int currentIsGameNode = -1;
   bool isExOpenned = false;
   public bool currentIsSentCorrectAnswer = false;
+  bool isTeamNumberSet = false;
 
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -29,15 +30,11 @@ public class GameController : MonoBehaviour
   [SerializeField] List<GameObject> nodeExs;
   [SerializeField] GameObject nodeParent;
   [SerializeField] GameObject finalQButton;
+  [SerializeField] List<GameObject> minigameWindows;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   Dictionary<string, int> answerToId = new Dictionary<string, int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
-
-  void Awake()
-  {
-    boothIds = ShuffleBoothIds(4);
-  }
   void Start()
   {
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
@@ -49,6 +46,14 @@ public class GameController : MonoBehaviour
   }
   void Update()
   {
+    if (!isTeamNumberSet)
+    {
+      if (Property != null)
+      {
+        TeamNumber = Property.GetNumber("teamNumber");
+        isTeamNumberSet = true;
+      }
+    }
     double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
 
     if (elapsedSeconds >= 40)
@@ -147,11 +152,6 @@ public class GameController : MonoBehaviour
         }
       }
     }
-    CalcTotalNumOfClearedNodes();
-  }
-  public List<int> GetBoothIds()
-  {
-    return boothIds;
   }
 
   void ClearMiniGame(int id)
@@ -301,5 +301,11 @@ public class GameController : MonoBehaviour
         NodeExActivateAnimations();
       }
     }
+  }
+  public void ActivateMinigameWindow(int _id)
+  {
+    int _current_id = (TeamNumber + _id) % 4;
+    minigameWindows[_current_id].SetActive(true);
+    minigameWindows[_current_id].GetComponent<MinigameWindow>().SetGamenode(_id);
   }
 }
