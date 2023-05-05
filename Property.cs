@@ -25,14 +25,17 @@ public class Property : MonoBehaviour
   public void SetFlag(string flagName, bool value)
   {
     flags[flagName] = value;
+    Debug.Log("Flag set: " + flagName + " in " + gameObject.name + "and the value is " + flags[flagName]);
   }
 
   public bool GetFlag(string flagName)
   {
     if (flags.ContainsKey(flagName))
     {
+      Debug.Log("Flag found: " + flagName + " in " + gameObject.name + "and the value is " + flags[flagName]);
       return flags[flagName];
     }
+    Debug.Log("Flag not found: " + flagName + " in " + gameObject.name);
     return false;
   }
   public void SetNumber(string numberName, int value)

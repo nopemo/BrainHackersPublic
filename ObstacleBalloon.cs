@@ -12,9 +12,8 @@ public class ObstacleBalloon : MonoBehaviour
   private void Awake()
   {
     animator = GetComponent<Animator>();
-    gameObject.transform.Find("ObstacleText").GetComponent<TextMeshProUGUI>().text = mainText;
     balloon = gameObject.transform.Find("Balloon").gameObject;
-    balloon.transform.Find("deleteObstacleText").GetComponent<TextMeshProUGUI>().text = subText;
+    InitializeTexts();
   }
 
   private void Start()
@@ -25,18 +24,22 @@ public class ObstacleBalloon : MonoBehaviour
 
   public void DisactivateAnimation()
   {
-    // Set the "Balloon" game object active to show the animation
     balloon.SetActive(true);
-    // Disactivate the EventSystem to prevent the user from clicking any buttons
-    GameObject.Find("EventSystem").GetComponent<UnityEngine.EventSystems.EventSystem>().enabled = false;
-
-    // Run "DeleteObstacleBalloons" in Animator
     animator.SetTrigger("DeleteObstacleBalloons");
   }
   public void Deactivate()
   {
-    //Activate the EventSystem
-    GameObject.Find("EventSystem").GetComponent<UnityEngine.EventSystems.EventSystem>().enabled = true;
     gameObject.SetActive(false);
+  }
+  public void DisactivateAnimationAfterAllMiniGamesCleared()
+  {
+    balloon.SetActive(true);
+    balloon.transform.Find("deleteObstacleText").GetComponent<TextMeshProUGUI>().text = "これは関係なかったね。";
+    animator.SetTrigger("DeleteObstacleBalloons");
+  }
+  public void InitializeTexts()
+  {
+    gameObject.transform.Find("ObstacleText").GetComponent<TextMeshProUGUI>().text = mainText;
+    balloon = gameObject.transform.Find("Balloon").gameObject; balloon.transform.Find("deleteObstacleText").GetComponent<TextMeshProUGUI>().text = subText;
   }
 }

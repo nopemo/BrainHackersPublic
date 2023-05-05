@@ -11,9 +11,8 @@ public class GameController : MonoBehaviour
   int currentState = -1;
   int currentIsGameNode = -1;
   bool isExOpenned = false;
+  bool isActiveStartNode = false;
   public bool currentIsSentCorrectAnswer = false;
-  bool isTeamNumberSet = false;
-
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
 
@@ -22,15 +21,19 @@ public class GameController : MonoBehaviour
   [SerializeField] GameObject startNode;
   [SerializeField] GameObject CircleTimer;
   [SerializeField] List<GameObject> inputWordsSpaces;
+  [SerializeField] GameObject firstInputWordSpace;
   [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
   // [SerializeField] float delayOfNodeExActivate = 0.4f;
   [SerializeField] GameObject motosensimeta;
+  [SerializeField] GameObject sutaato;
   [SerializeField] GameObject teamNumberText;
   [SerializeField] GameObject insideBrain;
   [SerializeField] List<GameObject> nodeExs;
   [SerializeField] GameObject nodeParent;
   [SerializeField] GameObject finalQButton;
   [SerializeField] List<GameObject> minigameWindows;
+  [SerializeField] List<GameObject> irrelevantBalloons;
+  [SerializeField] GameObject otherWindow;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   Dictionary<string, int> answerToId = new Dictionary<string, int>();
@@ -40,23 +43,24 @@ public class GameController : MonoBehaviour
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
     currentIsSentCorrectAnswer = false;
     startTime = DateTime.Now;
-    startNode.GetComponent<Node>().ChangeState(2);
-    ActivateInputWordsSpaces();
     teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
+    TeamNumber = Property.Instance.GetNumber("TeamNumber");
+    Property.Instance.SetFlag("IsGameCleared", false);
+    foreach (GameObject wordSpace in inputWordsSpaces)
+    {
+      wordSpace.SetActive(false);
+    }
   }
   void Update()
   {
-    if (!isTeamNumberSet)
+    if (!isActiveStartNode)
     {
-      if (Property != null)
-      {
-        TeamNumber = Property.GetNumber("teamNumber");
-        isTeamNumberSet = true;
-      }
+      startNode.GetComponent<Node>().ChangeState(2);
+      isActiveStartNode = true;
     }
     double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
 
-    if (elapsedSeconds >= 40)
+    if (elapsedSeconds >= 40 * 60)
     {
       CloseMainGame();
     }
@@ -74,6 +78,7 @@ public class GameController : MonoBehaviour
   {
     if (inputtext == "ホーキング")
     {
+      Property.Instance.SetFlag("IsGameCleared", true);
       if (questionBalloon.activeSelf)
       {
         questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
@@ -104,64 +109,53 @@ public class GameController : MonoBehaviour
       motosensimeta.GetComponent<ObstacleBalloon>().DisactivateAnimation();
 
     }
-    //check if the dictionary keys contain the inputtext
+    if (inputtext == "スタート")
+    {
+      firstInputWordSpace.SetActive(false);
+      ActivateInputWordsSpaces();
+      sutaato.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+
+    }
     if (answerToId.ContainsKey(inputtext))
     {
+      if (!isExOpenned && answerToId[inputtext] > 40)
+      {
+        return;
+      }
       if (currentId == answerToId[inputtext] && questionBalloon.activeSelf)
       {
-        if (currentIsGameNode == 1)
-        {
-          ClearMiniGame(currentId);
-          currentIsSentCorrectAnswer = true;
-        }
-        else if (currentIsGameNode == 0 && currentState == 1)
+        if (currentIsGameNode == 0 && currentState < 2)
         {
           questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
           currentIsSentCorrectAnswer = true;
         }
         questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
+        CalcTotalNumOfClearedNodes();
+        return;
       }
-    }
-    if (currentState == 1 && !currentIsSentCorrectAnswer)
-    {
-      if (currentIsGameNode == 1)
+      GameObject _tmpnode = GameObject.Find("NodeNorm (" + answerToId[inputtext].ToString() + ")");
+      if (_tmpnode.GetComponent<Node>().GetState() == 2)
       {
-        if (inputtext == currentAnswer)
-        {
-          Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          ClearMiniGame(currentId);
-          currentIsSentCorrectAnswer = true;
-        }
-        else
-        {
-          Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
-        }
+        return;
       }
-      else if (currentIsGameNode == 0)
-      {
-        if (inputtext == currentAnswer && currentState == 1)
-        {
-          Debug.Log("Correct! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "たしかに!";
-          currentIsSentCorrectAnswer = true;
-        }
-        else if (inputtext != currentAnswer && currentState == 1)
-        {
-          Debug.Log("Wrong! id:" + currentId.ToString() + " state:" + currentState.ToString());
-          questionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "違う気がする...";
-        }
-      }
+      SetCurrentProperties(answerToId[inputtext], 1, 1, inputtext);
+      PlayAnimations();
+      _tmpnode.GetComponent<Node>().ChangeState(2);
     }
+    CalcTotalNumOfClearedNodes();
   }
 
-  void ClearMiniGame(int id)
+  public void ClearMiniGame(int id)
   {
     if (!(listOfClearedGameNodeIds.Contains(id)))
     {
       listOfClearedGameNodeIds.Add(id);
     }
     ActivateInputWordsSpaces();
-    // DeleteObstacleBalloons(id);
+    if (listOfClearedGameNodeIds.Count == 4)
+    {
+      DeleteIrrelevantBalloons();
+    }
   }
   List<int> ShuffleBoothIds(int numOfBooths)
   {
@@ -283,6 +277,7 @@ public class GameController : MonoBehaviour
   }
   public void CalcTotalNumOfClearedNodes()
   {
+    Debug.Log("CalcTotalNumOfClearedNodes has been called");
     int _totalNumOfClearedNodes = 0;
     foreach (Transform _nodeTransform in nodeParent.transform)
     {
@@ -291,21 +286,64 @@ public class GameController : MonoBehaviour
         _totalNumOfClearedNodes++;
       }
     }
-    if (_totalNumOfClearedNodes >= 45)
+    Debug.Log("_totalNumOfClearedNodes: " + _totalNumOfClearedNodes.ToString() + " isExOpenned: " + isExOpenned.ToString() + " isGameCleared: " + Property.Instance.GetFlag("IsGameCleared").ToString());
+    if (_totalNumOfClearedNodes >= 1)
     {
       if (!isExOpenned)
       {
-        //Run the Animation Trigger "ExpandTrigger"
-        isExOpenned = true;
-        insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
-        NodeExActivateAnimations();
+        if (Property.Instance.GetFlag("IsGameCleared"))
+        {
+          //Run the Animation Trigger "ExpandTrigger"
+          isExOpenned = true;
+          insideBrain.GetComponent<Animator>().SetTrigger("ExpandTrigger");
+          //Run NodeExActivateAnimations() after the insideBrain animation is finished
+          //The animation is 0:30 seconds long
+          StartCoroutine(NodeExActivateAnimationsAfterDelay(1.0f));
+        }
       }
     }
+  }
+  IEnumerator NodeExActivateAnimationsAfterDelay(float delay)
+  {
+    yield return new WaitForSeconds(delay);
+    NodeExActivateAnimations();
+    yield return new WaitForSeconds(delay);
+    ActivateOtherWindow("Cleared40NormNodes");
   }
   public void ActivateMinigameWindow(int _id)
   {
     int _current_id = (TeamNumber + _id) % 4;
     minigameWindows[_current_id].SetActive(true);
-    minigameWindows[_current_id].GetComponent<MinigameWindow>().SetGamenode(_id);
+    minigameWindows[_current_id].GetComponent<GameWindow>().SetGamenode(_id);
+  }
+  void DeleteIrrelevantBalloons()
+  {
+    //delete balloon in irrelevantBalloons like PlayAnimation()
+    float delay = delayOfObstacleBalloonDelete;
+    foreach (GameObject _targetObstacleBalloon in irrelevantBalloons)
+    {
+      Debug.Log(_targetObstacleBalloon.name + " is playing animation");
+      if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf)
+        continue;
+
+      StartCoroutine(PlayAnimationWhenIrrelevantWithDelay(_targetObstacleBalloon, delay));
+      delay += delayOfObstacleBalloonDelete;
+    }
+    StartCoroutine(ShowWindowWithDelay("Cleared4MiniGames", delay + 1.0f));
+  }
+  IEnumerator PlayAnimationWhenIrrelevantWithDelay(GameObject _targetObstacleBalloon, float delay)
+  {
+    yield return new WaitForSeconds(delay);
+    _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimationAfterAllMiniGamesCleared();
+  }
+  IEnumerator ShowWindowWithDelay(string _mode, float delay)
+  {
+    yield return new WaitForSeconds(delay);
+    ActivateOtherWindow(_mode);
+  }
+  public void ActivateOtherWindow(string mode)
+  {
+    Sprite _sprite = Resources.Load<Sprite>($"OtherWindow/{mode}");
+    otherWindow.SetActive(true);
   }
 }

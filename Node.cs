@@ -24,31 +24,29 @@ public class Node : MonoBehaviour, IPointerClickHandler
 
   GameObject EdgeActive;
   GameObject GameController;
+  GameObject TestEditMode;
   void Awake()
   {
-    SetTouchable(true);
     id = ExtractNumberFromObjectName(gameObject);
+    QuestionBalloon = GameObject.Find("Question");
+    GameController = GameObject.Find("GameController");
+    TestEditMode = GameObject.Find("TestEditMode");
+    // TestEditMode.GetComponent<TestEditMode>().UpdateObjectsAndNearNodes("");
+  }
+  void Start()
+  {
+    EdgeActive = Resources.Load("EdgeActive") as GameObject;
+    Debug.Log("nearNodes.Count:" + nearNodes.Count.ToString());
+    gameObject.transform.GetChild(0).gameObject.SetActive(false);
+    GameController.GetComponent<GameController>().SetAnswerToIdDictionary(questionAnswer, id);
+    SetTouchable(true);
     if (gameObject.name.Contains("Game"))
     {
       isGameNode = 1;
     }
-    QuestionBalloon = GameObject.Find("Question");
-    GameController = GameObject.Find("GameController");
     int[] limitDistance = { 150, 200 }; // GameObject.Find("GameController").GetComponent<GameController>().limitDistance;
                                         // nodeSprites = Resources.LoadAll<Sprite>("node");
     ChangeState(state);
-    EdgeActive = Resources.Load("EdgeActive") as GameObject;
-    Debug.Log("nearNodes.Count:" + nearNodes.Count.ToString());
-    //print my uid to the child text in the hierarchy
-    gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = id.ToString();
-    //change the sorting layer and order in layer of the text
-    gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "Node";
-    gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 1;
-    gameObject.transform.GetChild(0).gameObject.SetActive(false);
-    GameController.GetComponent<GameController>().SetAnswerToIdDictionary(questionAnswer, id);
-  }
-  void Start()
-  {
     if (id > 40 && isGameNode == 0)
     {
       gameObject.SetActive(false);
@@ -169,6 +167,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
     if (node1.GetComponent<Node>().state < 2 || node2.GetComponent<Node>().state < 2)
     {
       //change the boldness
+      edge.GetComponent<LineRenderer>().sortingOrder = 1;
       edge.GetComponent<LineRenderer>().startWidth = 5.1f;
       edge.GetComponent<LineRenderer>().endWidth = 5.1f;
     }
@@ -209,21 +208,17 @@ public class Node : MonoBehaviour, IPointerClickHandler
     GameObject questionImageObj = QuestionBalloon.transform.Find("QuestionImage").gameObject;
     if (state == 2)
     {
-      GameController.GetComponent<GameController>().ActivateMinigameWindow(id);
+      QuestionBalloon.SetActive(true);
+      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "";
+      Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGameCleared");
+      questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
+      GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, questionAnswer);
+      GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
     }
     else
     {
+      GameController.GetComponent<GameController>().ActivateMinigameWindow(id);
       // Add the question text below the image.
-      Debug.Log("Not clear");
-      List<int> boothIds = GameController.GetComponent<GameController>().GetBoothIds();
-      QuestionBalloon.transform.Find("QuestionText").gameObject.GetComponent<TextMeshProUGUI>().text = "場所" + boothIds[id % 4] + "へ向かおう!";
-      Sprite questionSprite = Resources.Load<Sprite>("Questions/MiniGame" + boothIds[id % 4].ToString("D2"));
-      questionImageObj.GetComponent<SpriteRenderer>().sprite = questionSprite;
-      // Get the "QuestionImage" child object of the balloon
-      // Load the image from the Resources/Questions folder based on the id
-      // Set the loaded image to the "QuestionImage" object using SpriteRenderer
-      GameController.GetComponent<GameController>().SetCurrentProperties(id, state, isGameNode, questionAnswer);
-      GameController.GetComponent<GameController>().currentIsSentCorrectAnswer = false;
     }
   }
   int ExtractNumberFromObjectName(GameObject obj)

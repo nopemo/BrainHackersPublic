@@ -14,6 +14,7 @@ public class GameWindow : MonoBehaviour
   void Start()
   {
     gameObject.SetActive(false);
+    gameObject.transform.position = new Vector3(0, 0, 0);
   }
   public void OnEndEdit()
   {
@@ -34,7 +35,7 @@ public class GameWindow : MonoBehaviour
     {
       gameController.GetComponent<GameController>().SetCurrentProperties(gameNode.GetComponent<Node>().id, 1, 1, gameKeyword);
       gameController.GetComponent<GameController>().PlayAnimations();
-      gameContorller.ClearMiniGame(gameNode.GetComponent<Node>().id);
+      gameController.GetComponent<GameController>().ClearMiniGame(gameNode.GetComponent<Node>().id);
       gameObject.SetActive(false);
     }
     else

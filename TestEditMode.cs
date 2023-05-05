@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using TMPro;
 using System.IO;
 using System.Text;
@@ -57,9 +58,19 @@ public class TestEditMode : MonoBehaviour
   void OnRenderObject()
   {
     Debug.Log("OnRenderObject");
+    InitializeObstacleBalloon();
   }
   public void DrowInitialEdges()
   {
+    string filePath = Path.Combine(Application.dataPath, "edges.csv");
+
+    // 既存のCSVファイルが存在するか確認
+    if (File.Exists(filePath))
+    {
+      // ファイルを削除
+      File.Delete(filePath);
+    }
+
     string _tmpName;
     GameObject Edge = Resources.Load("Edge") as GameObject;
     // List<GameObject> nodeNorms = new List<GameObject>();
@@ -85,7 +96,7 @@ public class TestEditMode : MonoBehaviour
     {
       foreach (GameObject nearNode in nodeNorm.GetComponent<Node>().nearNodes)
       {
-        csvData.AppendLine($"{nodeNorm.GetComponent<Node>().id},false,{nearNode.GetComponent<Node>().id},false");
+        csvData.AppendLine($"{nodeNorm.GetComponent<Node>().id},{nodeNorm.GetComponent<Node>().isGameNode == 1},{nearNode.GetComponent<Node>().id},{nearNode.GetComponent<Node>().isGameNode == 1}");
         GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
         line.GetComponent<Renderer>().sortingLayerName = "Edge";
         LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
@@ -106,7 +117,7 @@ public class TestEditMode : MonoBehaviour
     {
       foreach (GameObject nearNode in nodeGame.GetComponent<Node>().nearNodes)
       {
-        csvData.AppendLine($"{nodeGame.GetComponent<Node>().id},false,{nearNode.GetComponent<Node>().id},false");
+        csvData.AppendLine($"{nodeGame.GetComponent<Node>().id},{nodeGame.GetComponent<Node>().isGameNode == 1},{nearNode.GetComponent<Node>().id},{nearNode.GetComponent<Node>().isGameNode == 1}");
         GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
         line.GetComponent<Renderer>().sortingLayerName = "Edge";
         LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
@@ -121,15 +132,6 @@ public class TestEditMode : MonoBehaviour
         line.tag = "Edge";
       }
     }
-    string filePath = Path.Combine(Application.dataPath, "edges.csv");
-
-    // 既存のCSVファイルが存在するか確認
-    if (File.Exists(filePath))
-    {
-      // ファイルを削除
-      File.Delete(filePath);
-    }
-
     File.WriteAllText(filePath, csvData.ToString());
   }
   public void DeleteCurrentEdges()
@@ -172,10 +174,10 @@ public class TestEditMode : MonoBehaviour
 
     return nodeData;
   }
-  public void UpdateObjectsAndNearNodes()
+  public void UpdateObjectsAndNearNodes(string _gamemode)
   {
-    string edgeFilePath = Path.Combine(Application.dataPath, "edges.csv");
-    string nodeDataFilePath = Path.Combine(Application.dataPath, "node_data.csv");
+    string edgeFilePath = Path.Combine(Application.dataPath, "edges" + _gamemode + ".csv");
+    string nodeDataFilePath = Path.Combine(Application.dataPath, "node_data" + _gamemode + ".csv");
 
     Dictionary<int, (int id, Vector3 position, bool isGameNode, int questionImageId, string questionImageName, string questionAnswer)> nodeData = ReadNodeDataFromCsv(nodeDataFilePath);
     List<(int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode)> edgeData = ReadEdgeDataFromCsv(edgeFilePath);
@@ -236,15 +238,34 @@ public class TestEditMode : MonoBehaviour
     }
 
     // nearNodesリストを新しく作り直して更新
-    foreach (GameObject nodeObject in nodeObjects)
+    foreach (GameObject nodeObject in allchildrennodes)
     {
       Node nodeComponent = nodeObject.GetComponent<Node>();
       nodeComponent.nearNodes = new List<GameObject>();
     }
     foreach ((int nodeAId, bool nodeAIsGameNode, int nodeBId, bool nodeBIsGameNode) in edgeData)
     {
-      GameObject nodeA = GameObject.Find($"Node{(nodeAIsGameNode ? "Game" : "Norm")} ({nodeAId})");
-      GameObject nodeB = GameObject.Find($"Node{(nodeBIsGameNode ? "Game" : "Norm")} ({nodeBId})");
+      GameObject nodeA;
+      GameObject nodeB;
+      if (nodeAIsGameNode)
+      {
+        nodeA = GameObject.Find($"NodeGame ({nodeAId})");
+      }
+      else
+      {
+        nodeA = GameObject.Find($"NodeNorm ({nodeAId})");
+      }
+      if (nodeBIsGameNode)
+      {
+        nodeB = GameObject.Find($"NodeGame ({nodeBId})");
+      }
+      else
+      {
+        nodeB = GameObject.Find($"NodeNorm ({nodeBId})");
+      }
+      Debug.Log("nodeA's name is " + nodeA.name + " and nodeB's name is " + nodeB.name);
+      // GameObject nodeA = GameObject.Find($"Node{(nodeAIsGameNode ? "Game" : "Norm")} ({nodeAId})");
+      // GameObject nodeB = GameObject.Find($"Node{(nodeBIsGameNode ? "Game" : "Norm")} ({nodeBId})");
 
       if (nodeA != null && nodeB != null)
       {
@@ -399,5 +420,18 @@ public class TestEditMode : MonoBehaviour
       }
     }
 
+  }
+  public void InitializeObstacleBalloon()
+  {
+    List<GameObject> ObstacleBalloons = new List<GameObject>();
+    GameObject[] _tmp = GameObject.FindGameObjectsWithTag("Fukidashi");
+    for (int i = 0; i < _tmp.Length; i++)
+    {
+      ObstacleBalloons.Add(_tmp[i]);
+    }
+    foreach (GameObject obstacleBalloon in ObstacleBalloons)
+    {
+      obstacleBalloon.GetComponent<ObstacleBalloon>().InitializeTexts();
+    }
   }
 }

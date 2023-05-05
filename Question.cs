@@ -9,4 +9,9 @@ public class Question : MonoBehaviour
   {
     disActivateButtonBalloon.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
   }
+  public void Disactivate()
+  {
+    gameObject.transform.Find("QuestionImage").GetComponent<SpriteRenderer>().sprite = null;
+    gameObject.SetActive(false);
+  }
 }

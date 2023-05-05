@@ -19,7 +19,7 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
     //move the balloon to (-360,-100,0)
     balloon.transform.position = new Vector3(-360, -100, 0);
     //disactivate the balloon
-    DisactivateBalloon();
+    balloon.SetActive(false);
   }
   public void OnPointerClick(PointerEventData eventData)
   {
@@ -39,7 +39,8 @@ public class DisactivateButtonBalloon : MonoBehaviour, IPointerClickHandler
     }
     GameController.GetComponent<GameController>().SetCurrentProperties(-1, -1, -1, "It has not been set yet.");
     balloon.transform.Find("QuestionImage").GetComponent<SpriteRenderer>().sprite = null;
-
+    //Play balloon animation usin trigger
+    // balloon.GetComponent<Animator>().SetTrigger("Disactivate");
     balloon.SetActive(false);
   }
   public void SetTouchable(bool touchable)
