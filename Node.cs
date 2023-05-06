@@ -77,6 +77,17 @@ public class Node : MonoBehaviour, IPointerClickHandler
   public void ChangeState(int state)
   {
     this.state = state;
+    if (!Property.Instance.GetFlag("isTutorial"))
+    {
+      if (isGameNode == 1)
+      {
+        Property.Instance.SetFlag("Game" + id.ToString(), state >= 2);
+      }
+      else
+      {
+        Property.Instance.SetFlag("Norm" + id.ToString(), state >= 2);
+      }
+    }
     // GetComponent<SpriteRenderer>().sprite = nodeSprites[state];
     if (state == 0)
     {

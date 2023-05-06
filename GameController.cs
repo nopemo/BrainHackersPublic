@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
   int currentIsGameNode = -1;
   bool isExOpenned = false;
   bool isActiveStartNode = false;
+  bool isMotosenshimeta = false;
   public bool currentIsSentCorrectAnswer = false;
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -45,11 +46,13 @@ public class GameController : MonoBehaviour
   void Awake()
   {
     Property.Instance.SetNumber("TotalTime", totalTime);
+    Property.Instance.SetFlag("IsTutorial", false);
   }
   void Start()
   {
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
     currentIsSentCorrectAnswer = false;
+    isMotosensimeta = false;
     startTime = DateTime.Now;
     teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
     TeamNumber = Property.Instance.GetNumber("TeamNumber");
@@ -121,6 +124,7 @@ public class GameController : MonoBehaviour
     }
     if (inputtext == "モトセンシメタ")
     {
+      isMotosenshimeta = true;
       if (questionBalloon.activeSelf)
       {
         questionBalloon.transform.Find("DisactivateQuestion").gameObject.GetComponent<DisactivateButtonBalloon>().DisactivateBalloon();
@@ -230,8 +234,7 @@ public class GameController : MonoBehaviour
   }
   void CloseMainGame()
   {
-    //save the current state of the every node
-    SaveCurrentStateToProperty();
+    SaveControllerStateToProperty();
     ActivateOtherWindow("TimeOver");
     StartCoroutine(TimeOverSceneLoad());
   }
@@ -382,8 +385,39 @@ public class GameController : MonoBehaviour
       otherWindow.transform.GetChild(1).gameObject.SetActive(false);
     }
   }
-  void SaveCurrentStateToProperty()
+  void SaveControllerStateToProperty()
   {
-    Debug.Log("SaveCurrentStateToProperty has been called");
+    Property.Instance.SetFlag("IsGameCleared", isGameCleared);
+    Property.Instance.SetFlag("IsExOpenned", isExOpenned);
+    Property.Instance.SetFlag("IsGameStarted", isGameStarted);
+    Property.Instance.SetFlag("IsMotosenshimeta", isMotosenshimeta);
+    Property.Instance.SetNumber("TeamNumber", TeamNumber);
   }
-}
+  void LoadControllerStateFromProperty()
+  {
+    isGameCleared = Property.Instance.GetFlag("IsGameCleared");
+    isExOpenned = Property.Instance.GetFlag("IsExOpenned");
+    isGameStarted = Property.Instance.GetFlag("IsGameStarted");
+    TeamNumber = Property.Instance.GetNumber("TeamNumber");
+    foreach (Transform _nodeTransform in nodeParent.transform)
+    {
+      string _tmpname;
+      if (_nodeTransform.gameObject.GetComponent<Node>().isGameNode == 1)
+      {
+        _tmpname = "Game" + _nodeTransform.gameObject.GetComponent<Node>().id.ToString();
+      }
+      else
+      {
+        _tmpname = "Norm" + _nodeTransform.gameObject.GetComponent<Node>().id.ToString();
+      }
+      if (Property.Instance.GetFlag(_tmpname))
+      {
+        _nodeTransform.gameObject.GetComponent<Node>().ChangeState(2);
+        foreach (GameObject _obstacleBalloon in _nodeTransform.gameObject.GetComponent<Node>().deleteObstacleBalloons)
+        {
+          _obstacleBalloon.SetActive(false);
+        }
+      }
+    }
+
+  }
