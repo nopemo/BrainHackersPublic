@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,10 +35,17 @@ public class GameController : MonoBehaviour
   [SerializeField] List<GameObject> minigameWindows;
   [SerializeField] List<GameObject> irrelevantBalloons;
   [SerializeField] GameObject otherWindow;
+  [SerializeField] GameObject obstacleBalloonParent;
+  [SerializeField] int totalTime = 2400;
   List<int> listOfClearedGameNodeIds = new List<int>();
   List<int> boothIds = new List<int>();
   Dictionary<string, int> answerToId = new Dictionary<string, int>();
   // Dictionary<int,NodeProperties> nodeNormStates =new Dictionary<int,NodeProperties>
+
+  void Awake()
+  {
+    Property.Instance.SetNumber("TotalTime", totalTime);
+  }
   void Start()
   {
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
@@ -60,7 +68,7 @@ public class GameController : MonoBehaviour
     }
     double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
 
-    if (elapsedSeconds >= 40 * 60)
+    if (elapsedSeconds >= totalTime)
     {
       CloseMainGame();
     }
@@ -78,6 +86,7 @@ public class GameController : MonoBehaviour
   {
     if (inputtext == "ホーキング")
     {
+      ActivateOtherWindow("ClearFinalQ");
       Property.Instance.SetFlag("IsGameCleared", true);
       if (questionBalloon.activeSelf)
       {
@@ -86,6 +95,16 @@ public class GameController : MonoBehaviour
       //WRITE ME
       //Cleared text
       SetCurrentProperties(-1, -1, -1, "ホーキング");
+      float _tmpdelay = 0.0f;
+      foreach (Transform _tmpObstacleTransform in obstacleBalloonParent.transform.GetComponentsInChildren<Transform>())
+      {
+        GameObject _tmpObstacle = _tmpObstacleTransform.gameObject;
+        if (_tmpObstacle.activeSelf)
+        {
+          StartCoroutine(PlayAnimationWithDelay(_tmpObstacle, _tmpdelay));
+          _tmpdelay += delayOfObstacleBalloonDelete;
+        }
+      }
       currentIsSentCorrectAnswer = false;
     }
     if (inputtext == "イチニサンゴ")
@@ -211,11 +230,17 @@ public class GameController : MonoBehaviour
   }
   void CloseMainGame()
   {
-    Debug.Log("WRITE ME GameController/CloseMainGame");
-    //Change Scene
-    //Save the current properties
-    //Prepare for the result scene
+    //save the current state of the every node
+    SaveCurrentStateToProperty();
+    ActivateOtherWindow("TimeOver");
+    StartCoroutine(TimeOverSceneLoad());
   }
+  IEnumerator TimeOverSceneLoad()
+  {
+    yield return new WaitForSeconds(3.0f);
+    Initiate.Fade("AfterMainGame", Color.black, 1.0f);
+  }
+
   public void PlayAnimations()
   {
     GameObject _targetNode = GameObject.Find($"Node{(currentId > 90 ? "Game" : "Norm")} ({currentId})");
@@ -261,7 +286,10 @@ public class GameController : MonoBehaviour
   IEnumerator PlayAnimationWithDelay(GameObject _targetObstacleBalloon, float delay)
   {
     yield return new WaitForSeconds(delay);
-    _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+    if (_targetObstacleBalloon != null && _targetObstacleBalloon.activeSelf)
+    {
+      _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+    }
   }
   // IEnumerator NodeActivateAnimationWithDelay(GameObject _targetExNode, float delay)
   // {
@@ -287,7 +315,7 @@ public class GameController : MonoBehaviour
       }
     }
     Debug.Log("_totalNumOfClearedNodes: " + _totalNumOfClearedNodes.ToString() + " isExOpenned: " + isExOpenned.ToString() + " isGameCleared: " + Property.Instance.GetFlag("IsGameCleared").ToString());
-    if (_totalNumOfClearedNodes >= 1)
+    if (_totalNumOfClearedNodes >= 45)
     {
       if (!isExOpenned)
       {
@@ -329,7 +357,10 @@ public class GameController : MonoBehaviour
       StartCoroutine(PlayAnimationWhenIrrelevantWithDelay(_targetObstacleBalloon, delay));
       delay += delayOfObstacleBalloonDelete;
     }
-    StartCoroutine(ShowWindowWithDelay("Cleared4MiniGames", delay + 1.0f));
+    if (!Property.Instance.GetFlag("IsGameCleared"))
+    {
+      StartCoroutine(ShowWindowWithDelay("Cleared4MiniGames", delay + 1.0f));
+    }
   }
   IEnumerator PlayAnimationWhenIrrelevantWithDelay(GameObject _targetObstacleBalloon, float delay)
   {
@@ -344,6 +375,15 @@ public class GameController : MonoBehaviour
   public void ActivateOtherWindow(string mode)
   {
     Sprite _sprite = Resources.Load<Sprite>($"OtherWindow/{mode}");
+    otherWindow.transform.GetChild(0).GetComponent<Image>().sprite = _sprite;
     otherWindow.SetActive(true);
+    if (mode == "TimeOver")
+    {
+      otherWindow.transform.GetChild(1).gameObject.SetActive(false);
+    }
+  }
+  void SaveCurrentStateToProperty()
+  {
+    Debug.Log("SaveCurrentStateToProperty has been called");
   }
 }

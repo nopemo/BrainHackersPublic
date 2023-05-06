@@ -6,7 +6,7 @@ using TMPro;
 
 public class CircleTimer : MonoBehaviour
 {
-  [SerializeField] private float totalTime = 120.0f; // 制限時間を40秒に設定
+  private float totalTime = 2400; // 制限時間を40秒に設定
   private Image timerImage;
   //Load from Resources/CircleTimer1.png
   private Sprite circleTimerSprite;
@@ -22,6 +22,7 @@ public class CircleTimer : MonoBehaviour
   {
     timerImage = GetComponent<Image>();
     childTMProText.GetComponent<TextMeshProUGUI>().text = (int)(totalTime / 60) + "";
+    totalTime = Property.Instance.GetNumber("TotalTime");
   }
 
   public void UpdateTime(double elapsedSeconds)
