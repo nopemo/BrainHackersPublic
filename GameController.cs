@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
   [SerializeField] int TeamNumber = 0;
   [SerializeField] GameObject questionBalloon;
   [SerializeField] GameObject startNode;
-  [SerializeField] GameObject CircleTimer;
+  [SerializeField] GameObject TimerObject;
   [SerializeField] List<GameObject> inputWordsSpaces;
   [SerializeField] GameObject firstInputWordSpace;
   [SerializeField] float delayOfObstacleBalloonDelete = 0.4f;
@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour
   {
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
     currentIsSentCorrectAnswer = false;
-    isMotosensimeta = false;
+    isMotosenshimeta = false;
     startTime = DateTime.Now;
     teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
     TeamNumber = Property.Instance.GetNumber("TeamNumber");
@@ -76,7 +76,7 @@ public class GameController : MonoBehaviour
       CloseMainGame();
     }
 
-    CircleTimer.GetComponent<CircleTimer>().UpdateTime(elapsedSeconds);
+    TimerObject.GetComponent<BarTimer>().UpdateTime(elapsedSeconds);
   }
   public void SetCurrentProperties(int id, int state, int isGameNode, string answer)
   {
@@ -387,17 +387,13 @@ public class GameController : MonoBehaviour
   }
   void SaveControllerStateToProperty()
   {
-    Property.Instance.SetFlag("IsGameCleared", isGameCleared);
     Property.Instance.SetFlag("IsExOpenned", isExOpenned);
-    Property.Instance.SetFlag("IsGameStarted", isGameStarted);
     Property.Instance.SetFlag("IsMotosenshimeta", isMotosenshimeta);
     Property.Instance.SetNumber("TeamNumber", TeamNumber);
   }
   void LoadControllerStateFromProperty()
   {
-    isGameCleared = Property.Instance.GetFlag("IsGameCleared");
     isExOpenned = Property.Instance.GetFlag("IsExOpenned");
-    isGameStarted = Property.Instance.GetFlag("IsGameStarted");
     TeamNumber = Property.Instance.GetNumber("TeamNumber");
     foreach (Transform _nodeTransform in nodeParent.transform)
     {
@@ -419,5 +415,5 @@ public class GameController : MonoBehaviour
         }
       }
     }
-
   }
+}
