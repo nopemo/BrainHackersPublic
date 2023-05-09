@@ -7,7 +7,8 @@ using TMPro;
 public class BarTimer : MonoBehaviour
 {
   private float totalTime = 2400; // 制限時間を40秒に設定
-  private float imageSize = 0.0f;
+  private const float imageSize = 1220; // Spriteのwidth と画像サイズは別
+
   //Load from Resources/BarTimer1.png
   private Sprite barTimerMinutesMax;
   private Sprite barTimerMinutesMin;
@@ -28,16 +29,15 @@ public class BarTimer : MonoBehaviour
 
   void Awake()
   {
-    barTimerMinutesMax = Resources.Load<Sprite>("BarTimer/0508_timer_minutes_max");
-    barTimerMinutesMin = Resources.Load<Sprite>("BarTimer/0508_timer_minutes_zero");
-    barTimerSecondsMax = Resources.Load<Sprite>("BarTimer/0508_timer_seconds_max");
-    barTimerSecondsMin = Resources.Load<Sprite>("BarTimer/0508_timer_seconds_zero");
+    barTimerMinutesMax = Resources.Load<Sprite>("BarTimer/mozuku_timer_minutes_max");
+    barTimerMinutesMin = Resources.Load<Sprite>("BarTimer/mozuku_timer_minutes_zero");
+    barTimerSecondsMax = Resources.Load<Sprite>("BarTimer/mozuku_timer_seconds_max");
+    barTimerSecondsMin = Resources.Load<Sprite>("BarTimer/mozuku_timer_seconds_zero");
     barTimerMinutesText = Resources.Load<Sprite>("BarTimer/timer_minutes_text");
     barTimerSecondsText = Resources.Load<Sprite>("BarTimer/timer_seconds_test");
   }
   void Start()
   {
-    imageSize = childTimerMax.GetComponent<Image>().sprite.rect.width;
     totalTime = Property.Instance.GetNumber("TotalTime");
     UpdateTime(0);
   }
@@ -45,6 +45,8 @@ public class BarTimer : MonoBehaviour
 
   public void UpdateTime(double elapsedSeconds)
   {
+    float _imageRate;
+
     if (elapsedSeconds >= totalTime - 60)
     {
       //change color to #D4AE08
@@ -54,7 +56,7 @@ public class BarTimer : MonoBehaviour
       //change color to #150E00
       childTextBGimage.GetComponent<Image>().color = new Color(0.082f, 0.055f, 0f, 0.7f);
       childNokori.GetComponent<Image>().sprite = barTimerSecondsText;
-      float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds))) / imageSize;
+      _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds))) / imageSize;
       childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
     }
     else
@@ -65,7 +67,7 @@ public class BarTimer : MonoBehaviour
       //change color to #041E2C
       childTextBGimage.GetComponent<Image>().color = new Color(0.015f, 0.117f, 0.172f, 0.7f);
       childNokori.GetComponent<Image>().sprite = barTimerMinutesText;
-      float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds) / 40)) / imageSize; ;
+      _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds) / 40)) / imageSize; ;
       childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
     }
     if (totalTime - elapsedSeconds > 60 * 100)
