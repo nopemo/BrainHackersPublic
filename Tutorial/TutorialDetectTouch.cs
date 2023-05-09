@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class TutorialDetectTouch : MonoBehaviour, IPointerClickHandler
 {
@@ -66,6 +67,10 @@ public class TutorialDetectTouch : MonoBehaviour, IPointerClickHandler
     if (gameObject.GetComponent<UnityEngine.UI.Button>() != null)
     {
       gameObject.GetComponent<UnityEngine.UI.Button>().enabled = isTouchable;
+    }
+    if (gameObject.GetComponent<Image>() != null)
+    {
+      gameObject.GetComponent<Image>().raycastTarget = isTouchable;
     }
   }
   public void SetTriggerObject(bool _isTriggerObject)

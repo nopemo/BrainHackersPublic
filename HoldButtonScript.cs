@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 using System;
 
 public class HoldButtonScript : MonoBehaviour
@@ -22,6 +23,7 @@ public class HoldButtonScript : MonoBehaviour
 
   [SerializeField] int BUTTON_WIDTH = 1050; // 固定
   [SerializeField] float BAR_OFFSET = 0.03f; // 棒の位置が変わる。必要に応じて変更してください。
+  [SerializeField] string scenename = "GameScene"; // シーン名を入れてください。
   float BAR_START_POS;
   float BAR_RANGE;
 
@@ -63,6 +65,8 @@ public class HoldButtonScript : MonoBehaviour
     isEnableHold = false;
     barSprite.SetActive(false);
 
+    //Load scene
+    SceneManager.LoadScene(scenename);
     // ボタンを長押しし終わった時の処理をここに書いてください。
     Debug.Log("EndHold");
   }

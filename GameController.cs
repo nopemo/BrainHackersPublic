@@ -110,7 +110,7 @@ public class GameController : MonoBehaviour
       }
       currentIsSentCorrectAnswer = false;
     }
-    if (inputtext == "イチニサンゴ")
+    if (inputtext == "イチイチゴ")
     {
       if (questionBalloon.activeSelf)
       {
@@ -118,11 +118,21 @@ public class GameController : MonoBehaviour
       }
       //WRITE ME
       //Cleared text
-      SetCurrentProperties(-1, -1, -1, "イチニサンゴ");
+      SetCurrentProperties(-1, -1, -1, "イチイチゴ");
       currentIsSentCorrectAnswer = false;
+      float _tmpdelay = 0.0f;
+      foreach (Transform _tmpObstacleTransform in obstacleBalloonParent.transform.GetComponentsInChildren<Transform>())
+      {
+        GameObject _tmpObstacle = _tmpObstacleTransform.gameObject;
+        if (_tmpObstacle.activeSelf && _tmpObstacle.GetComponent<ObstacleBalloon>() != null)
+        {
+          StartCoroutine(PlayAnimationWithDelay(_tmpObstacle, _tmpdelay));
+          _tmpdelay += delayOfObstacleBalloonDelete;
+        }
+      }
       finalQButton.GetComponent<FinalQButton>().SetState(2);
     }
-    if (inputtext == "モトセンシメタ")
+    if (inputtext == "モトセンシメタ" || inputtext == "センシメタ")
     {
       isMotosenshimeta = true;
       if (questionBalloon.activeSelf)
@@ -289,9 +299,9 @@ public class GameController : MonoBehaviour
   IEnumerator PlayAnimationWithDelay(GameObject _targetObstacleBalloon, float delay)
   {
     yield return new WaitForSeconds(delay);
-    if (_targetObstacleBalloon != null && _targetObstacleBalloon.activeSelf)
+    if (_targetObstacleBalloon != null && _targetObstacleBalloon.activeSelf && _targetObstacleBalloon.GetComponent<ObstacleBalloon>() != null)
     {
-      _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation();
+      _targetObstacleBalloon.GetComponent<ObstacleBalloon>().DisactivateAnimation(); //this is line 304
     }
   }
   // IEnumerator NodeActivateAnimationWithDelay(GameObject _targetExNode, float delay)
@@ -354,7 +364,7 @@ public class GameController : MonoBehaviour
     foreach (GameObject _targetObstacleBalloon in irrelevantBalloons)
     {
       Debug.Log(_targetObstacleBalloon.name + " is playing animation");
-      if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf)
+      if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf || _targetObstacleBalloon.GetComponent<ObstacleBalloon>() == null)
         continue;
 
       StartCoroutine(PlayAnimationWhenIrrelevantWithDelay(_targetObstacleBalloon, delay));

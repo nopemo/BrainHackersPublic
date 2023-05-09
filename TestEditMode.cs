@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SceneManagement;
+//add SceneManagement to use SceneManager
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.IO;
 using System.Text;
@@ -13,6 +14,7 @@ public class TestEditMode : MonoBehaviour
   [SerializeField] int[] limitDistance;
   [SerializeField] List<int> targetNodes;
   [SerializeField] GameObject nodeParent;
+  [SerializeField] string gameMode;
   void Start()
   {
     Debug.Log("StartTestEditMode");
@@ -412,12 +414,7 @@ public class TestEditMode : MonoBehaviour
     }
     foreach (GameObject buttonWord in ButtonWords)
     {
-      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = buttonWord.GetComponent<InputWord>().wordText;
-      buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = buttonWord.GetComponent<InputWord>().fontSize;
-      if (buttonWord.GetComponent<InputWord>().wordText.Length > 3)
-      {
-        buttonWord.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
-      }
+      buttonWord.GetComponent<InputWord>().InitializeText();
     }
 
   }

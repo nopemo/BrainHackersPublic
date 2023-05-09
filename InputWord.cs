@@ -11,6 +11,7 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
   public int fontSize = 36;
   GameObject InputWordsField;
   bool isTouchable = true;
+  [SerializeField] GameObject InputWordText;
 
   void Awake()
   {
@@ -30,11 +31,11 @@ public class InputWord : MonoBehaviour, IPointerClickHandler
   {
     //change the chlid TMPro text
     InputWordsField = GameObject.Find("InputWordsField");
-    gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = wordText;
-    gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = fontSize;
+    InputWordText.GetComponent<TextMeshProUGUI>().text = wordText;
+    InputWordText.GetComponent<TextMeshProUGUI>().fontSize = fontSize;
     if (wordText.Length > 3)
     {
-      gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSize = 32;
+      InputWordText.GetComponent<TextMeshProUGUI>().fontSize = 32;
     }
   }
   public void SetTouchable(bool touchable)

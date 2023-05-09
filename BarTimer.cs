@@ -28,16 +28,16 @@ public class BarTimer : MonoBehaviour
 
   void Awake()
   {
-    barTimerMinutesMax = Resources.Load<Sprite>("BarTimer/timer_minutes_max");
-    barTimerMinutesMin = Resources.Load<Sprite>("BarTimer/timer_minutes_zero");
-    barTimerSecondsMax = Resources.Load<Sprite>("BarTimer/timer_seconds_max");
-    barTimerSecondsMin = Resources.Load<Sprite>("BarTimer/timer_seconds_zero");
+    barTimerMinutesMax = Resources.Load<Sprite>("BarTimer/0508_timer_minutes_max");
+    barTimerMinutesMin = Resources.Load<Sprite>("BarTimer/0508_timer_minutes_zero");
+    barTimerSecondsMax = Resources.Load<Sprite>("BarTimer/0508_timer_seconds_max");
+    barTimerSecondsMin = Resources.Load<Sprite>("BarTimer/0508_timer_seconds_zero");
     barTimerMinutesText = Resources.Load<Sprite>("BarTimer/timer_minutes_text");
     barTimerSecondsText = Resources.Load<Sprite>("BarTimer/timer_seconds_test");
-    imageSize = childTimerMax.GetComponent<RectTransform>().sizeDelta.x;
   }
   void Start()
   {
+    imageSize = childTimerMax.GetComponent<Image>().sprite.rect.width;
     totalTime = Property.Instance.GetNumber("TotalTime");
     UpdateTime(0);
   }
@@ -54,6 +54,8 @@ public class BarTimer : MonoBehaviour
       //change color to #150E00
       childTextBGimage.GetComponent<Image>().color = new Color(0.082f, 0.055f, 0f, 0.7f);
       childNokori.GetComponent<Image>().sprite = barTimerSecondsText;
+      float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds))) / imageSize;
+      childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
     }
     else
     {
@@ -63,6 +65,8 @@ public class BarTimer : MonoBehaviour
       //change color to #041E2C
       childTextBGimage.GetComponent<Image>().color = new Color(0.015f, 0.117f, 0.172f, 0.7f);
       childNokori.GetComponent<Image>().sprite = barTimerMinutesText;
+      float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * Mathf.Ceil((float)(totalTime - elapsedSeconds) / 40)) / imageSize; ;
+      childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
     }
     if (totalTime - elapsedSeconds > 60 * 100)
     {
@@ -78,15 +82,11 @@ public class BarTimer : MonoBehaviour
       if (elapsedSeconds >= totalTime - 60)
 
       {
-        float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * (float)(int)((totalTime - elapsedSeconds) + 1f - 0.00000001f)) / imageSize;
-        childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
         childTMProText.GetComponent<TextMeshProUGUI>().text = ((int)(totalTime - elapsedSeconds + 1)).ToString();
         Debug.Log("elapsedSeconds: " + elapsedSeconds.ToString() + " _imageRate: " + _imageRate.ToString());
       }
       else
       {
-        float _imageRate = (leftMargin + (indicatedScale + distanceOfScales) * (float)(int)((totalTime - elapsedSeconds - 60) * 58 / (totalTime - 60) + 3f - 0.00000001f)) / imageSize;
-        childTimerMax.GetComponent<Image>().fillAmount = _imageRate;
         childTMProText.GetComponent<TextMeshProUGUI>().text = ((int)((totalTime - elapsedSeconds) / 60 + 1)).ToString();
         Debug.Log("elapsedSeconds: " + elapsedSeconds.ToString() + " _imageRate: " + _imageRate.ToString());
       }
