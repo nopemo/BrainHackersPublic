@@ -40,7 +40,7 @@ public class GameWindow : MonoBehaviour
     }
     else
     {
-      gameInputField.GetComponent<TMP_InputField>().text = "キーワードが違います。ブースへと戻ってください。";
+      gameInputField.GetComponent<TMP_InputField>().text = "キーワードが違います。";
     }
   }
   public void SetGamenode(int _id)
