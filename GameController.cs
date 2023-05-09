@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ public class GameController : MonoBehaviour
   bool isExOpenned = false;
   bool isActiveStartNode = false;
   bool isMotosenshimeta = false;
+  bool isCalledCloseGame = false;
   public bool currentIsSentCorrectAnswer = false;
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -46,7 +48,9 @@ public class GameController : MonoBehaviour
   void Awake()
   {
     Property.Instance.SetNumber("TotalTime", totalTime);
-    Property.Instance.SetFlag("IsTutorial", false);
+    Property.Instance.SetFlag("IsTutorial", SceneManager.GetActiveScene().name == "Tutorial");
+    Debug.Log("This scene name is " + SceneManager.GetActiveScene().name);
+    Debug.Log("IsTutorial is " + Property.Instance.GetFlag("IsTutorial"));
   }
   void Start()
   {
@@ -71,9 +75,10 @@ public class GameController : MonoBehaviour
     }
     double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
 
-    if (elapsedSeconds >= totalTime)
+    if (elapsedSeconds >= totalTime && !isCalledCloseGame)
     {
       CloseMainGame();
+      isCalledCloseGame = true;
     }
 
     TimerObject.GetComponent<BarTimer>().UpdateTime(elapsedSeconds);
@@ -244,15 +249,25 @@ public class GameController : MonoBehaviour
   }
   void CloseMainGame()
   {
-    SaveControllerStateToProperty();
-    ActivateOtherWindow("TimeOver");
-    StartCoroutine(TimeOverSceneLoad());
+    Debug.Log("CloseMainGame has been called and IsTutorial is " + Property.Instance.GetFlag("IsTutorial").ToString());
+    if (Property.Instance.GetFlag("IsTutorial"))
+    {
+      Property.Instance.SetFlag("IsTutorial", false);
+      GameObject.Find("TutorialManager").GetComponent<TutorialManager>().ForcelyMoveToFinalSection();
+    }
+    else
+    {
+      SaveControllerStateToProperty();
+      ActivateOtherWindow("TimeOver");
+      StartCoroutine(TimeOverSceneLoad());
+    }
   }
   IEnumerator TimeOverSceneLoad()
   {
     yield return new WaitForSeconds(3.0f);
     Initiate.Fade("AfterMainGame", Color.black, 1.0f);
   }
+
 
   public void PlayAnimations()
   {

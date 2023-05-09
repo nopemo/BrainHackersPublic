@@ -70,12 +70,22 @@ public class TutorialManager : MonoBehaviour
   public void NextSection()
   {
     StopTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
-    currentTutorialSectionNumber++;
+    if (currentTutorialSectionNumber < tutorialOrder.Count - 1)
+    {
+      currentTutorialSectionNumber++;
+    }
     if (currentTutorialSectionNumber >= tutorialOrder.Count - 1)
     {
       changeSceneButton.SetActive(true);
     }
     StartTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
+  }
+  public void ForcelyMoveToFinalSection()
+  {
+    StopTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
+    currentTutorialSectionNumber = tutorialOrder.Count - 1;
+    changeSceneButton.SetActive(true);
+    StartTutorialSection("ForcelyMoveToFinalSection");
   }
   void StartTutorialSection(string sectionName)
   {
