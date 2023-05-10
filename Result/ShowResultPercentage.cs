@@ -14,17 +14,17 @@ public class ShowResultPercentage : MonoBehaviour
     {
       if (Property.Instance.GetFlag("Norm" + i.ToString()))
       {
-        percentage += 0.5f;
+        percentage += 1f;
       }
     }
     for (int i = 96; i < 100; i++)
     {
       if (Property.Instance.GetFlag("Game" + i.ToString()))
       {
-        percentage += 15;
+        percentage += 10;
       }
     }
-    if (Property.Instance.GetFlag("isGameCleared"))
+    if (Property.Instance.GetFlag("IsGameCleared"))
     {
       SuccessImage.SetActive(true);
       FailureImage.SetActive(false);
@@ -38,6 +38,6 @@ public class ShowResultPercentage : MonoBehaviour
       //change color to FFB800
       percentageText.GetComponent<TextMeshProUGUI>().color = new Color(1f, 0.72f, 0f);
     }
-    percentageText.GetComponent<TextMeshProUGUI>().text = percentage.ToString("F1");
+    percentageText.GetComponent<TextMeshProUGUI>().text = percentage.ToString("F0");
   }
 }

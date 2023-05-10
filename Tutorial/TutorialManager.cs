@@ -25,6 +25,7 @@ public class TutorialManager : MonoBehaviour
   [SerializeField] GameObject node1;
   [SerializeField] GameObject node2;
   [SerializeField] GameObject finalQ;
+  [SerializeField] List<GameObject> touchableObjects;
   int currentTutorialSectionNumber = 0;
   Dictionary<string, TutorialData> tutorialData;
   void Start()
@@ -34,6 +35,10 @@ public class TutorialManager : MonoBehaviour
     foreach (TutorialData tutorialDataItem in tutorialDataList)
     {
       tutorialData.Add(tutorialDataItem.SectionName, tutorialDataItem);
+    }
+    foreach (GameObject _touchableObject in touchableObjects)
+    {
+      _touchableObject.GetComponent<TouchableObject>().SetTouchable(false);
     }
     StartTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
     changeSceneButton.SetActive(false);

@@ -62,4 +62,10 @@ public class Property : MonoBehaviour
     }
     return "Not Found";
   }
+  public void ClearAll()
+  {
+    flags.Clear();
+    numbers.Clear();
+    strings.Clear();
+  }
 }

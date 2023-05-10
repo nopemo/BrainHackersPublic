@@ -92,7 +92,7 @@ public class GameController : MonoBehaviour
   }
   public void CheckAnswer(string inputtext)
   {
-    if (inputtext == "ホーキング")
+    if (inputtext == "ニュートン")
     {
       ActivateOtherWindow("ClearFinalQ");
       Property.Instance.SetFlag("IsGameCleared", true);
@@ -102,7 +102,7 @@ public class GameController : MonoBehaviour
       }
       //WRITE ME
       //Cleared text
-      SetCurrentProperties(-1, -1, -1, "ホーキング");
+      SetCurrentProperties(-1, -1, -1, "ニュートン");
       float _tmpdelay = 0.0f;
       foreach (Transform _tmpObstacleTransform in obstacleBalloonParent.transform.GetComponentsInChildren<Transform>())
       {
@@ -137,7 +137,7 @@ public class GameController : MonoBehaviour
       }
       finalQButton.GetComponent<FinalQButton>().SetState(2);
     }
-    if (inputtext == "モトセンシメタ" || inputtext == "センシメタ")
+    if (inputtext == "セカイイッシュウ")
     {
       isMotosenshimeta = true;
       if (questionBalloon.activeSelf)
@@ -250,7 +250,7 @@ public class GameController : MonoBehaviour
   void CloseMainGame()
   {
     Debug.Log("CloseMainGame has been called and IsTutorial is " + Property.Instance.GetFlag("IsTutorial").ToString());
-    if (Property.Instance.GetFlag("IsTutorial"))
+    if (SceneManager.GetActiveScene().name == "Tutorial")
     {
       Property.Instance.SetFlag("IsTutorial", false);
       GameObject.Find("TutorialManager").GetComponent<TutorialManager>().ForcelyMoveToFinalSection();
@@ -440,5 +440,18 @@ public class GameController : MonoBehaviour
         }
       }
     }
+  }
+  public void AddRemainingTime(int _inttime)
+  {
+    //startTime is DateTime type
+    //Add _time to startTime
+    float _time = (float)_inttime;
+    Debug.Log("current start time: " + startTime.ToString() + " _time: " + _time.ToString());
+    startTime = startTime.AddSeconds(_time);
+    Debug.Log("new start time: " + startTime.ToString());
+  }
+  public float GetElipsedTime()
+  {
+    return 1 + totalTime + (float)(startTime - DateTime.Now).TotalSeconds;
   }
 }

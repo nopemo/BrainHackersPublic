@@ -7,14 +7,8 @@ using UnityEngine.UI;
 public class TutorialDetectTouch : MonoBehaviour, IPointerClickHandler
 {
   [SerializeField] GameObject tutorialManager;
-  List<string> tutorialSections;
   bool isTouchable;
   bool isTriggerObject;
-  void Awake()
-  {
-    SetTouchable(false);
-    tutorialSections = new List<string>();
-  }
   public void OnPointerClick(PointerEventData eventData)
   {
     if (isTriggerObject)

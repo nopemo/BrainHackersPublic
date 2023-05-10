@@ -24,14 +24,11 @@ public class Node : MonoBehaviour, IPointerClickHandler
 
   GameObject EdgeActive;
   GameObject GameController;
-  GameObject TestEditMode;
   void Awake()
   {
     id = ExtractNumberFromObjectName(gameObject);
     QuestionBalloon = GameObject.Find("Question");
     GameController = GameObject.Find("GameController");
-    TestEditMode = GameObject.Find("TestEditMode");
-    // TestEditMode.GetComponent<TestEditMode>().UpdateObjectsAndNearNodes("");
   }
   void Start()
   {
@@ -56,6 +53,22 @@ public class Node : MonoBehaviour, IPointerClickHandler
   public void OnPointerClick(PointerEventData eventData)
   // public void OnClick()
   {
+    if (Property.Instance.GetFlag("IsDebugMode"))
+    {
+      if (isGameNode == 1)
+      {
+        GameController.GetComponent<GameController>().SetCurrentProperties(id, 1, 1,
+        questionAnswer);
+        GameController.GetComponent<GameController>().PlayAnimations();
+        GameController.GetComponent<GameController>().ClearMiniGame(id);
+        return;
+      }
+      else
+      {
+        GameController.GetComponent<GameController>().CheckAnswer(questionAnswer);
+        return;
+      }
+    }
     if (!isTouchable)
     {
       return;
@@ -77,7 +90,7 @@ public class Node : MonoBehaviour, IPointerClickHandler
   public void ChangeState(int state)
   {
     this.state = state;
-    if (!Property.Instance.GetFlag("isTutorial"))
+    if (!Property.Instance.GetFlag("IsTutorial"))
     {
       if (isGameNode == 1)
       {
