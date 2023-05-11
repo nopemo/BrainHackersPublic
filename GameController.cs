@@ -114,6 +114,7 @@ public class GameController : MonoBehaviour
         }
       }
       currentIsSentCorrectAnswer = false;
+      return;
     }
     if (inputtext == "イチイチゴ")
     {
@@ -381,7 +382,6 @@ public class GameController : MonoBehaviour
       Debug.Log(_targetObstacleBalloon.name + " is playing animation");
       if (_targetObstacleBalloon == null || !_targetObstacleBalloon.activeSelf || _targetObstacleBalloon.GetComponent<ObstacleBalloon>() == null)
         continue;
-
       StartCoroutine(PlayAnimationWhenIrrelevantWithDelay(_targetObstacleBalloon, delay));
       delay += delayOfObstacleBalloonDelete;
     }

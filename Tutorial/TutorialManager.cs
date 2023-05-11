@@ -38,7 +38,7 @@ public class TutorialManager : MonoBehaviour
     }
     foreach (GameObject _touchableObject in touchableObjects)
     {
-      _touchableObject.GetComponent<TouchableObject>().SetTouchable(false);
+      _touchableObject.GetComponent<TutorialDetectTouch>().SetTouchable(false);
     }
     StartTutorialSection(tutorialOrder[currentTutorialSectionNumber]);
     changeSceneButton.SetActive(false);

@@ -69,4 +69,9 @@ public class DebugController : MonoBehaviour
       }
     }
   }
+  public void ChangeIsDebugMode()
+  {
+    isDebugMode = !isDebugMode;
+    Property.Instance.SetFlag("IsDebugMode", isDebugMode);
+  }
 }

@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Hold : MonoBehaviour, IPointerClickHandler
+public class Hold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
   [SerializeField] GameObject DebugController;
   [SerializeField] string objectName;
-  public void OnPointerClick(PointerEventData eventData)
+  public void OnPointerDown(PointerEventData eventData)
   {
     if (objectName == "Memory")
     {
@@ -18,6 +18,17 @@ public class Hold : MonoBehaviour, IPointerClickHandler
     }
   }
   public void OnPointerUp(PointerEventData eventData)
+  {
+    if (objectName == "Memory")
+    {
+      DebugController.GetComponent<DebugController>().SetHold("Memory", false);
+    }
+    else if (objectName == "Reset")
+    {
+      DebugController.GetComponent<DebugController>().SetHold("Reset", false);
+    }
+  }
+  public void OnPointerExit(PointerEventData eventData)
   {
     if (objectName == "Memory")
     {

@@ -31,7 +31,7 @@ public class GameWindow : MonoBehaviour
       gameInputField.GetComponent<TMP_InputField>().text = "";
       return;
     }
-    if (gameKeyword == gameInputField.GetComponent<TMP_InputField>().text)
+    if (gameKeyword.ToLower() == gameInputField.GetComponent<TMP_InputField>().text.ToLower())
     {
       gameController.GetComponent<GameController>().SetCurrentProperties(gameNode.GetComponent<Node>().id, 1, 1, gameKeyword);
       gameController.GetComponent<GameController>().PlayAnimations();
@@ -40,7 +40,10 @@ public class GameWindow : MonoBehaviour
     }
     else
     {
-      gameInputField.GetComponent<TMP_InputField>().text = "キーワードが違います。";
+      gameInputField.GetComponent<TMP_InputField>().text = "";
+      // input message to PlaceHolder
+      gameInputField.GetComponent<TMP_InputField>().placeholder.GetComponent<TextMeshProUGUI>().text = "キーワードが違います。";
+
     }
   }
   public void SetGamenode(int _id)
