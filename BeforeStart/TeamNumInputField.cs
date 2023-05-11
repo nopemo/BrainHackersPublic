@@ -8,6 +8,7 @@ public class TeamNumInputField : MonoBehaviour
   [SerializeField] GameObject property;
   [SerializeField] GameObject inputField;
   [SerializeField] GameObject confirmButton;
+  [SerializeField] string savePropertyName = "TeamNumber";
 
   public void ButtonIsClicked()
   {
@@ -18,7 +19,7 @@ public class TeamNumInputField : MonoBehaviour
     //get the input field
     string input = inputField.GetComponent<TMPro.TMP_InputField>().text;
     //set the team number
-    property.GetComponent<Property>().SetNumber("TeamNumber", int.Parse(input));
+    property.GetComponent<Property>().SetNumber(savePropertyName, int.Parse(input));
   }
 
   // Update is called once per frame

@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
   int currentId = -1;
   int currentState = -1;
   int currentIsGameNode = -1;
+  int boothNumber = 0;
   bool isExOpenned = false;
   bool isActiveStartNode = false;
   bool isMotosenshimeta = false;
@@ -60,6 +61,7 @@ public class GameController : MonoBehaviour
     startTime = DateTime.Now;
     teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
     TeamNumber = Property.Instance.GetNumber("TeamNumber");
+    boothNumber = Property.Instance.GetNumber("BoothNumber");
     Property.Instance.SetFlag("IsGameCleared", false);
     foreach (GameObject wordSpace in inputWordsSpaces)
     {
@@ -369,7 +371,7 @@ public class GameController : MonoBehaviour
   }
   public void ActivateMinigameWindow(int _id)
   {
-    int _current_id = (TeamNumber + _id) % 4;
+    int _current_id = (boothNumber + _id) % 4;
     minigameWindows[_current_id].SetActive(true);
     minigameWindows[_current_id].GetComponent<GameWindow>().SetGamenode(_id);
   }

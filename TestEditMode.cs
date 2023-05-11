@@ -14,7 +14,7 @@ public class TestEditMode : MonoBehaviour
   [SerializeField] int[] limitDistance;
   [SerializeField] List<int> targetNodes;
   [SerializeField] GameObject nodeParent;
-  [SerializeField] string gameMode;
+  [SerializeField] string gameMode = "";
   void Start()
   {
     Debug.Log("StartTestEditMode");
@@ -29,20 +29,20 @@ public class TestEditMode : MonoBehaviour
     // GameObject.Find("Clock").transform.position = new Vector3(0, 0, 0);
     Debug.Log("fukidashi.Length: " + fukidashi.Length);
 
-    for (int i = 0; i < fukidashi.Length; i++)
-    {
-      //change the order in layer of the fukidashi
-      //fukidashi has TextMeshProUGUI component and it has canvas component
-      //change the sorting layer and order in layer of the text and the fukidashi
+    // for (int i = 0; i < fukidashi.Length; i++)
+    // {
+    //   //change the order in layer of the fukidashi
+    //   //fukidashi has TextMeshProUGUI component and it has canvas component
+    //   //change the sorting layer and order in layer of the text and the fukidashi
 
-      //find the child text in the hierarchy
-      fukidashi[i].GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
-      fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
-      // fukidashi[i].transform.Find("Balloon").GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
-      // GameObject _tmp = fukidashi[i].transform.Find("Balloon").gameObject;
-      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
-      // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
-    }
+    //   //find the child text in the hierarchy
+    //   fukidashi[i].GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+    //   fukidashi[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+    //   // fukidashi[i].transform.Find("Balloon").GetComponent<SpriteRenderer>().sortingOrder = 2 * i + 1;
+    //   // GameObject _tmp = fukidashi[i].transform.Find("Balloon").gameObject;
+    //   // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingOrder = 2 * i + 2;
+    //   // _tmp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().canvas.sortingLayerName = "DeleteObstacleBalloon";
+    // }
     InitializeTextOfInputButton();
 
     foreach (Transform nodeTrans in nodeParent.transform)
@@ -64,7 +64,7 @@ public class TestEditMode : MonoBehaviour
   }
   public void DrowInitialEdges()
   {
-    string filePath = Path.Combine(Application.dataPath, "edges.csv");
+    string filePath = Path.Combine(Application.dataPath, "edges" + gameMode + ".csv");
 
     // 既存のCSVファイルが存在するか確認
     if (File.Exists(filePath))
@@ -305,7 +305,7 @@ public class TestEditMode : MonoBehaviour
       csvData.AppendLine($"{nodeComponent.id},{node.transform.position.x};{node.transform.position.y};{node.transform.position.z},{node.tag == "NodeGame"},{nodeComponent.questionImageId},{nodeComponent.questionImageName},{nodeComponent.questionAnswer}");
     }
 
-    string filePath = Path.Combine(Application.dataPath, "node_data.csv");
+    string filePath = Path.Combine(Application.dataPath, "node_data" + gameMode + ".csv");
     if (File.Exists(filePath))
     {
       File.Delete(filePath);
