@@ -28,7 +28,7 @@ public class ShowResultPercentage : MonoBehaviour
     {
       SuccessImage.SetActive(true);
       FailureImage.SetActive(false);
-      percentageText.GetComponent<TextMeshProUGUI>().color = new Color(0f, 1f, 1f);
+      // percentageText.GetComponent<TextMeshProUGUI>().color = new Color(0f, 1f, 1f);
       percentage += 20;
     }
     else
@@ -36,8 +36,8 @@ public class ShowResultPercentage : MonoBehaviour
       SuccessImage.SetActive(false);
       FailureImage.SetActive(true);
       //change color to FFB800
-      percentageText.GetComponent<TextMeshProUGUI>().color = new Color(1f, 0.72f, 0f);
+      // percentageText.GetComponent<TextMeshProUGUI>().color = new Color(1f, 0.72f, 0f);
     }
-    percentageText.GetComponent<TextMeshProUGUI>().text = percentage.ToString("F0");
+    percentageText.GetComponent<Text>().text = percentage.ToString("F0");
   }
 }
