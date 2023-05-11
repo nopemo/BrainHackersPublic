@@ -118,6 +118,8 @@ public class GameController : MonoBehaviour
         }
       }
       currentIsSentCorrectAnswer = false;
+      // move finalQButton to the outside of the screen using transform
+      finalQButton.transform.position = new Vector3(3000, 3000, 0);
       return;
     }
     if (inputtext == "イチイチゴ")
