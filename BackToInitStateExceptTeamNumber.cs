@@ -17,6 +17,6 @@ public class BackToInitStateExceptTeamNumber : MonoBehaviour
     Property.Instance.ClearAll();
     Property.Instance.SetNumber("TeamNumber", _teamNumber);
     Property.Instance.SetNumber("BoothNumber", _boothNumber);
-    SceneManager.LoadScene("SelectDifficulty");
+    SceneManager.LoadScene("BeforeStart");
   }
 }

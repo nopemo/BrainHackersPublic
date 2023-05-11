@@ -98,6 +98,7 @@ public class TestEditMode : MonoBehaviour
     {
       foreach (GameObject nearNode in nodeNorm.GetComponent<Node>().nearNodes)
       {
+        Debug.Log("nodeNorm: " + nodeNorm.GetComponent<Node>().id + ", nearNode: " + nearNode.GetComponent<Node>().id);
         csvData.AppendLine($"{nodeNorm.GetComponent<Node>().id},{nodeNorm.GetComponent<Node>().isGameNode == 1},{nearNode.GetComponent<Node>().id},{nearNode.GetComponent<Node>().isGameNode == 1}");
         GameObject line = Instantiate(Edge, Vector3.zero, Quaternion.identity, GameObject.Find("Edges").transform);
         line.GetComponent<Renderer>().sortingLayerName = "Edge";

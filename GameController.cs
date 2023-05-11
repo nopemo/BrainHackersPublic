@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
   bool isActiveStartNode = false;
   bool isMotosenshimeta = false;
   bool isCalledCloseGame = false;
+  bool isAllNodesCleared = false;
   public bool currentIsSentCorrectAnswer = false;
   DateTime startTime;
   string currentAnswer = "It has not been set yet.";
@@ -57,6 +58,7 @@ public class GameController : MonoBehaviour
   {
     SetCurrentProperties(-1, -1, -1, "it has not been set.");
     currentIsSentCorrectAnswer = false;
+    isAllNodesCleared = false;
     isMotosenshimeta = false;
     startTime = DateTime.Now;
     teamNumberText.GetComponent<TextMeshProUGUI>().text = TeamNumber.ToString("D2");
@@ -360,6 +362,11 @@ public class GameController : MonoBehaviour
           StartCoroutine(NodeExActivateAnimationsAfterDelay(1.0f));
         }
       }
+    }
+    if (_totalNumOfClearedNodes >= 55 && isAllNodesCleared == false)
+    {
+      isAllNodesCleared = true;
+      ActivateOtherWindow("ClearedAllNodes");
     }
   }
   IEnumerator NodeExActivateAnimationsAfterDelay(float delay)

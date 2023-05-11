@@ -18,20 +18,28 @@ public class GameWindow : MonoBehaviour
   }
   public void OnEndEdit()
   {
-    if (!System.Text.RegularExpressions.Regex.IsMatch(gameInputField.GetComponent<TMP_InputField>().text, @"^[a-zA-Z]+$"))
+    //ひらがなのみ許可濁点も可
+    if (!System.Text.RegularExpressions.Regex.IsMatch(gameInputField.GetComponent<TMP_InputField>().text, @"^[ぁ-ん]+$"))
     {
       gameInputField.GetComponent<TMP_InputField>().text = "";
+      gameInputField.GetComponent<TMP_InputField>().placeholder.GetComponent<TextMeshProUGUI>().text = "ひらがなで入力してください。";
       return;
     }
   }
   public void OnClickSendButton()
   {
-    if (!System.Text.RegularExpressions.Regex.IsMatch(gameInputField.GetComponent<TMP_InputField>().text, @"^[a-zA-Z]+$"))
+    if (!System.Text.RegularExpressions.Regex.IsMatch(gameInputField.GetComponent<TMP_InputField>().text, @"^[ぁ-ん]+$"))
     {
       gameInputField.GetComponent<TMP_InputField>().text = "";
+      gameInputField.GetComponent<TMP_InputField>().placeholder.GetComponent<TextMeshProUGUI>().text = "ひらがなで入力してください。";
+
       return;
     }
-    if (gameKeyword.ToLower() == gameInputField.GetComponent<TMP_InputField>().text.ToLower())
+    if (gameKeyword == gameInputField.GetComponent<TMP_InputField>().text ||
+        "せさみ" == gameInputField.GetComponent<TMP_InputField>().text ||
+        "めだる" == gameInputField.GetComponent<TMP_InputField>().text ||
+        "でぐち" == gameInputField.GetComponent<TMP_InputField>().text ||
+        "ないす" == gameInputField.GetComponent<TMP_InputField>().text)
     {
       gameController.GetComponent<GameController>().SetCurrentProperties(gameNode.GetComponent<Node>().id, 1, 1, gameKeyword);
       gameController.GetComponent<GameController>().PlayAnimations();
