@@ -5,7 +5,6 @@ using UnityEngine;
 public class TeamNumInputField : MonoBehaviour
 {
   // Start is called before the first frame update
-  [SerializeField] GameObject property;
   [SerializeField] GameObject inputField;
   [SerializeField] GameObject confirmButton;
   [SerializeField] string savePropertyName = "TeamNumber";
@@ -19,7 +18,7 @@ public class TeamNumInputField : MonoBehaviour
     //get the input field
     string input = inputField.GetComponent<TMPro.TMP_InputField>().text;
     //set the team number
-    property.GetComponent<Property>().SetNumber(savePropertyName, int.Parse(input));
+    Property.Instance.SetNumber(savePropertyName, int.Parse(input));
   }
 
   // Update is called once per frame
