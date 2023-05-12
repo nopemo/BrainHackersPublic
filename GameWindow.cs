@@ -44,6 +44,7 @@ public class GameWindow : MonoBehaviour
       gameController.GetComponent<GameController>().SetCurrentProperties(gameNode.GetComponent<Node>().id, 1, 1, gameKeyword);
       gameController.GetComponent<GameController>().PlayAnimations();
       gameController.GetComponent<GameController>().ClearMiniGame(gameNode.GetComponent<Node>().id);
+      gameController.GetComponent<GameController>().CalcTotalNumOfClearedNodes();
       gameObject.SetActive(false);
     }
     else

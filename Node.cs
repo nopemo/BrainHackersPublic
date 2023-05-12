@@ -61,11 +61,13 @@ public class Node : MonoBehaviour, IPointerClickHandler
         questionAnswer);
         GameController.GetComponent<GameController>().PlayAnimations();
         GameController.GetComponent<GameController>().ClearMiniGame(id);
+        GameController.GetComponent<GameController>().CalcTotalNumOfClearedNodes();
         return;
       }
       else
       {
         GameController.GetComponent<GameController>().CheckAnswer(questionAnswer);
+        GameController.GetComponent<GameController>().CalcTotalNumOfClearedNodes();
         return;
       }
     }
