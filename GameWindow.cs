@@ -59,4 +59,8 @@ public class GameWindow : MonoBehaviour
   {
     gameNode = GameObject.Find($"Node{(_id > 90 ? "Game" : "Norm")} ({_id})");
   }
+  public void Disactivate()
+  {
+    gameObject.SetActive(false);
+  }
 }
